@@ -854,7 +854,7 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  create_table "crm_artworks", :force => true do |t|
+  create_table "admin_artworks", :force => true do |t|
     t.integer  "custom_order_id"
     t.integer  "administrator_id"
     t.integer  "parent_id"
@@ -869,10 +869,10 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  add_index "crm_artworks", ["administrator_id"], :name => "index_artworks_on_administrator_id"
-  add_index "crm_artworks", ["custom_order_id"], :name => "index_artworks_on_custom_order_id"
+  add_index "admin_artworks", ["administrator_id"], :name => "index_artworks_on_administrator_id"
+  add_index "admin_artworks", ["custom_order_id"], :name => "index_artworks_on_custom_order_id"
 
-  create_table "crm_blog_entries", :force => true do |t|
+  create_table "admin_blog_entries", :force => true do |t|
     t.integer  "author_id"
     t.string   "title"
     t.text     "body"
@@ -880,17 +880,17 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  add_index "crm_blog_entries", ["author_id"], :name => "index_blog_entries_on_author_id"
+  add_index "admin_blog_entries", ["author_id"], :name => "index_blog_entries_on_author_id"
 
-  create_table "crm_brands", :force => true do |t|
+  create_table "admin_brands", :force => true do |t|
     t.string "name"
     t.string "sku_code"
   end
 
-  add_index "crm_brands", ["name"], :name => "index_brands_on_name"
-  add_index "crm_brands", ["sku_code"], :name => "index_brands_on_sku_code"
+  add_index "admin_brands", ["name"], :name => "index_brands_on_name"
+  add_index "admin_brands", ["sku_code"], :name => "index_brands_on_sku_code"
 
-  create_table "crm_comments", :force => true do |t|
+  create_table "admin_comments", :force => true do |t|
     t.string   "title",            :limit => 50, :default => ""
     t.string   "comment",                        :default => ""
     t.datetime "created_at",                                     :null => false
@@ -899,10 +899,10 @@ ActiveRecord::Schema.define(version: 1) do
     t.integer  "user_id",                        :default => 0,  :null => false
   end
 
-  add_index "crm_comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
-  add_index "crm_comments", ["user_id"], :name => "index_comments_on_user_id"
+  add_index "admin_comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
+  add_index "admin_comments", ["user_id"], :name => "index_comments_on_user_id"
 
-  create_table "crm_inventories", :force => true do |t|
+  create_table "admin_inventories", :force => true do |t|
     t.string  "name"
     t.integer "brand_id"
     t.string  "catalog_number"
@@ -919,32 +919,32 @@ ActiveRecord::Schema.define(version: 1) do
     t.integer "retail_stock_level", :default => 0
   end
 
-  add_index "crm_inventories", ["brand_id"], :name => "index_inventories_on_brand_id"
-  add_index "crm_inventories", ["catalog_number"], :name => "index_inventories_on_catalog_number"
-  add_index "crm_inventories", ["color"], :name => "index_inventories_on_color"
-  add_index "crm_inventories", ["inventory_color_id"], :name => "index_inventories_on_inventory_color_id"
-  add_index "crm_inventories", ["inventory_line_id"], :name => "index_inventories_on_inventory_line_id"
-  add_index "crm_inventories", ["inventory_size_id"], :name => "index_inventories_on_inventory_size_id"
-  add_index "crm_inventories", ["name"], :name => "index_inventories_on_name"
-  add_index "crm_inventories", ["size"], :name => "index_inventories_on_size"
+  add_index "admin_inventories", ["brand_id"], :name => "index_inventories_on_brand_id"
+  add_index "admin_inventories", ["catalog_number"], :name => "index_inventories_on_catalog_number"
+  add_index "admin_inventories", ["color"], :name => "index_inventories_on_color"
+  add_index "admin_inventories", ["inventory_color_id"], :name => "index_inventories_on_inventory_color_id"
+  add_index "admin_inventories", ["inventory_line_id"], :name => "index_inventories_on_inventory_line_id"
+  add_index "admin_inventories", ["inventory_size_id"], :name => "index_inventories_on_inventory_size_id"
+  add_index "admin_inventories", ["name"], :name => "index_inventories_on_name"
+  add_index "admin_inventories", ["size"], :name => "index_inventories_on_size"
 
-  create_table "crm_inventories_retail_products", :force => true do |t|
+  create_table "admin_inventories_retail_products", :force => true do |t|
     t.integer "retail_product_id",                                                :null => false
     t.integer "inventory_id",                                                     :null => false
     t.decimal "upcharge",          :precision => 8, :scale => 2, :default => 0.0
   end
 
-  add_index "crm_inventories_retail_products", ["inventory_id"], :name => "index_inventories_retail_products_on_inventory_id"
-  add_index "crm_inventories_retail_products", ["retail_product_id"], :name => "index_inventories_retail_products_on_retail_product_id"
+  add_index "admin_inventories_retail_products", ["inventory_id"], :name => "index_inventories_retail_products_on_inventory_id"
+  add_index "admin_inventories_retail_products", ["retail_product_id"], :name => "index_inventories_retail_products_on_retail_product_id"
 
-  create_table "crm_inventory_colors", :force => true do |t|
+  create_table "admin_inventory_colors", :force => true do |t|
     t.string "color"
     t.string "sku_code"
   end
 
-  add_index "crm_inventory_colors", ["sku_code"], :name => "index_inventory_colors_on_sku_code"
+  add_index "admin_inventory_colors", ["sku_code"], :name => "index_inventory_colors_on_sku_code"
 
-  create_table "crm_inventory_lines", :force => true do |t|
+  create_table "admin_inventory_lines", :force => true do |t|
     t.integer "brand_id"
     t.string  "catalog_number"
     t.string  "name"
@@ -952,35 +952,35 @@ ActiveRecord::Schema.define(version: 1) do
     t.string  "sku_code"
   end
 
-  add_index "crm_inventory_lines", ["brand_id"], :name => "index_inventory_lines_on_brand_id"
-  add_index "crm_inventory_lines", ["sku_code"], :name => "index_inventory_lines_on_sku_code"
+  add_index "admin_inventory_lines", ["brand_id"], :name => "index_inventory_lines_on_brand_id"
+  add_index "admin_inventory_lines", ["sku_code"], :name => "index_inventory_lines_on_sku_code"
 
-  create_table "crm_inventory_order_line_items", :force => true do |t|
+  create_table "admin_inventory_order_line_items", :force => true do |t|
     t.integer "supplier_location_id"
     t.integer "line_item_id"
     t.integer "inventory_order_id"
   end
 
-  create_table "crm_inventory_orders", :force => true do |t|
+  create_table "admin_inventory_orders", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "crm_inventory_sizes", :force => true do |t|
+  create_table "admin_inventory_sizes", :force => true do |t|
     t.string  "size"
     t.integer "sort_order"
     t.string  "sku_code"
   end
 
-  add_index "crm_inventory_sizes", ["sku_code"], :name => "index_inventory_sizes_on_sku_code"
+  add_index "admin_inventory_sizes", ["sku_code"], :name => "index_inventory_sizes_on_sku_code"
 
-  create_table "crm_iso_countries", :force => true do |t|
+  create_table "admin_iso_countries", :force => true do |t|
     t.string "iso2"
     t.string "iso3"
     t.string "name"
   end
 
-  create_table "crm_jobs", :force => true do |t|
+  create_table "admin_jobs", :force => true do |t|
     t.string   "title"
     t.string   "type"
     t.integer  "custom_order_id"
@@ -1012,22 +1012,22 @@ ActiveRecord::Schema.define(version: 1) do
     t.boolean  "digital_file_requested",                                  :default => false
   end
 
-  add_index "crm_jobs", ["art_sent_to_embroiderer"], :name => "index_jobs_on_art_sent_to_embroiderer"
-  add_index "crm_jobs", ["artwork_burned"], :name => "index_jobs_on_artwork_burned"
-  add_index "crm_jobs", ["custom_order_id"], :name => "index_jobs_on_custom_order_id"
-  add_index "crm_jobs", ["digital_file_generated"], :name => "index_jobs_on_digital_file_generated"
-  add_index "crm_jobs", ["digital_file_requested"], :name => "index_jobs_on_digital_file_requested"
-  add_index "crm_jobs", ["inventoried"], :name => "index_jobs_on_inventoried"
-  add_index "crm_jobs", ["ordered"], :name => "index_jobs_on_ordered"
-  add_index "crm_jobs", ["print_date"], :name => "index_jobs_on_print_date"
-  add_index "crm_jobs", ["printed"], :name => "index_jobs_on_printed"
-  add_index "crm_jobs", ["received_from_embroiderer"], :name => "index_jobs_on_received_from_embroiderer"
-  add_index "crm_jobs", ["rtp_art_approved"], :name => "index_jobs_on_rtp_art_approved"
-  add_index "crm_jobs", ["scheduled"], :name => "index_jobs_on_scheduled"
-  add_index "crm_jobs", ["sent_to_embroiderer"], :name => "index_jobs_on_sent_to_embroiderer"
-  add_index "crm_jobs", ["type"], :name => "index_jobs_on_type"
+  add_index "admin_jobs", ["art_sent_to_embroiderer"], :name => "index_jobs_on_art_sent_to_embroiderer"
+  add_index "admin_jobs", ["artwork_burned"], :name => "index_jobs_on_artwork_burned"
+  add_index "admin_jobs", ["custom_order_id"], :name => "index_jobs_on_custom_order_id"
+  add_index "admin_jobs", ["digital_file_generated"], :name => "index_jobs_on_digital_file_generated"
+  add_index "admin_jobs", ["digital_file_requested"], :name => "index_jobs_on_digital_file_requested"
+  add_index "admin_jobs", ["inventoried"], :name => "index_jobs_on_inventoried"
+  add_index "admin_jobs", ["ordered"], :name => "index_jobs_on_ordered"
+  add_index "admin_jobs", ["print_date"], :name => "index_jobs_on_print_date"
+  add_index "admin_jobs", ["printed"], :name => "index_jobs_on_printed"
+  add_index "admin_jobs", ["received_from_embroiderer"], :name => "index_jobs_on_received_from_embroiderer"
+  add_index "admin_jobs", ["rtp_art_approved"], :name => "index_jobs_on_rtp_art_approved"
+  add_index "admin_jobs", ["scheduled"], :name => "index_jobs_on_scheduled"
+  add_index "admin_jobs", ["sent_to_embroiderer"], :name => "index_jobs_on_sent_to_embroiderer"
+  add_index "admin_jobs", ["type"], :name => "index_jobs_on_type"
 
-  create_table "crm_line_items", :force => true do |t|
+  create_table "admin_line_items", :force => true do |t|
     t.integer  "order_id"
     t.integer  "inventory_id"
     t.string   "product"
@@ -1045,15 +1045,15 @@ ActiveRecord::Schema.define(version: 1) do
     t.boolean  "ordered",                                         :default => false
   end
 
-  add_index "crm_line_items", ["inventory_id"], :name => "index_line_items_on_inventory_id"
-  add_index "crm_line_items", ["job_id"], :name => "index_line_items_on_job_id"
-  add_index "crm_line_items", ["order_id"], :name => "index_line_items_on_order_id"
-  add_index "crm_line_items", ["product"], :name => "index_line_items_on_product"
-  add_index "crm_line_items", ["quantity"], :name => "index_line_items_on_quantity"
-  add_index "crm_line_items", ["total_price"], :name => "index_line_items_on_total_price"
-  add_index "crm_line_items", ["unit_price"], :name => "index_line_items_on_unit_price"
+  add_index "admin_line_items", ["inventory_id"], :name => "index_line_items_on_inventory_id"
+  add_index "admin_line_items", ["job_id"], :name => "index_line_items_on_job_id"
+  add_index "admin_line_items", ["order_id"], :name => "index_line_items_on_order_id"
+  add_index "admin_line_items", ["product"], :name => "index_line_items_on_product"
+  add_index "admin_line_items", ["quantity"], :name => "index_line_items_on_quantity"
+  add_index "admin_line_items", ["total_price"], :name => "index_line_items_on_total_price"
+  add_index "admin_line_items", ["unit_price"], :name => "index_line_items_on_unit_price"
 
-  create_table "crm_name_and_numbers", :force => true do |t|
+  create_table "admin_name_and_numbers", :force => true do |t|
     t.integer  "order_id"
     t.integer  "job_id"
     t.integer  "inventory_id"
@@ -1063,7 +1063,7 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  create_table "crm_orders", :force => true do |t|
+  create_table "admin_orders", :force => true do |t|
     t.integer  "customer_id"
     t.string   "delivery_first_name"
     t.string   "delivery_last_name"
@@ -1120,36 +1120,36 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "delivery_address_3"
   end
 
-  add_index "crm_orders", ["are_garments_in_stock"], :name => "index_orders_on_are_garments_in_stock"
-  add_index "crm_orders", ["balance"], :name => "index_orders_on_balance"
-  add_index "crm_orders", ["bid_request_id"], :name => "index_orders_on_bid_request_id"
-  add_index "crm_orders", ["customer_id"], :name => "index_orders_on_customer_id"
-  add_index "crm_orders", ["delivery_address_1"], :name => "index_orders_on_delivery_address_1"
-  add_index "crm_orders", ["delivery_address_2"], :name => "index_orders_on_delivery_address_2"
-  add_index "crm_orders", ["delivery_city"], :name => "index_orders_on_delivery_city"
-  add_index "crm_orders", ["delivery_country"], :name => "index_orders_on_delivery_country"
-  add_index "crm_orders", ["delivery_deadline"], :name => "index_orders_on_delivery_deadline"
-  add_index "crm_orders", ["delivery_first_name"], :name => "index_orders_on_delivery_first_name"
-  add_index "crm_orders", ["delivery_last_name"], :name => "index_orders_on_delivery_last_name"
-  add_index "crm_orders", ["delivery_state"], :name => "index_orders_on_delivery_state"
-  add_index "crm_orders", ["delivery_zipcode"], :name => "index_orders_on_delivery_zipcode"
-  add_index "crm_orders", ["garments_ordered_deadline"], :name => "index_orders_on_garments_ordered_deadline"
-  add_index "crm_orders", ["ink_ordered_deadline"], :name => "index_orders_on_ink_ordered_deadline"
-  add_index "crm_orders", ["is_ink_in_stock"], :name => "index_orders_on_is_ink_in_stock"
-  add_index "crm_orders", ["is_shipped"], :name => "index_orders_on_is_shipped"
-  add_index "crm_orders", ["is_tax_exempt"], :name => "index_orders_on_is_tax_exempt"
-  add_index "crm_orders", ["number"], :name => "index_orders_on_number"
-  add_index "crm_orders", ["order_source"], :name => "index_orders_on_order_source"
-  add_index "crm_orders", ["ship_date"], :name => "index_orders_on_ship_date"
-  add_index "crm_orders", ["ship_method"], :name => "index_orders_on_ship_method"
-  add_index "crm_orders", ["shipped_deadline"], :name => "index_orders_on_shipped_deadline"
-  add_index "crm_orders", ["shipping"], :name => "index_orders_on_shipping"
-  add_index "crm_orders", ["status"], :name => "index_orders_on_status"
-  add_index "crm_orders", ["subtotal"], :name => "index_orders_on_subtotal"
-  add_index "crm_orders", ["tax"], :name => "index_orders_on_tax"
-  add_index "crm_orders", ["total"], :name => "index_orders_on_total"
+  add_index "admin_orders", ["are_garments_in_stock"], :name => "index_orders_on_are_garments_in_stock"
+  add_index "admin_orders", ["balance"], :name => "index_orders_on_balance"
+  add_index "admin_orders", ["bid_request_id"], :name => "index_orders_on_bid_request_id"
+  add_index "admin_orders", ["customer_id"], :name => "index_orders_on_customer_id"
+  add_index "admin_orders", ["delivery_address_1"], :name => "index_orders_on_delivery_address_1"
+  add_index "admin_orders", ["delivery_address_2"], :name => "index_orders_on_delivery_address_2"
+  add_index "admin_orders", ["delivery_city"], :name => "index_orders_on_delivery_city"
+  add_index "admin_orders", ["delivery_country"], :name => "index_orders_on_delivery_country"
+  add_index "admin_orders", ["delivery_deadline"], :name => "index_orders_on_delivery_deadline"
+  add_index "admin_orders", ["delivery_first_name"], :name => "index_orders_on_delivery_first_name"
+  add_index "admin_orders", ["delivery_last_name"], :name => "index_orders_on_delivery_last_name"
+  add_index "admin_orders", ["delivery_state"], :name => "index_orders_on_delivery_state"
+  add_index "admin_orders", ["delivery_zipcode"], :name => "index_orders_on_delivery_zipcode"
+  add_index "admin_orders", ["garments_ordered_deadline"], :name => "index_orders_on_garments_ordered_deadline"
+  add_index "admin_orders", ["ink_ordered_deadline"], :name => "index_orders_on_ink_ordered_deadline"
+  add_index "admin_orders", ["is_ink_in_stock"], :name => "index_orders_on_is_ink_in_stock"
+  add_index "admin_orders", ["is_shipped"], :name => "index_orders_on_is_shipped"
+  add_index "admin_orders", ["is_tax_exempt"], :name => "index_orders_on_is_tax_exempt"
+  add_index "admin_orders", ["number"], :name => "index_orders_on_number"
+  add_index "admin_orders", ["order_source"], :name => "index_orders_on_order_source"
+  add_index "admin_orders", ["ship_date"], :name => "index_orders_on_ship_date"
+  add_index "admin_orders", ["ship_method"], :name => "index_orders_on_ship_method"
+  add_index "admin_orders", ["shipped_deadline"], :name => "index_orders_on_shipped_deadline"
+  add_index "admin_orders", ["shipping"], :name => "index_orders_on_shipping"
+  add_index "admin_orders", ["status"], :name => "index_orders_on_status"
+  add_index "admin_orders", ["subtotal"], :name => "index_orders_on_subtotal"
+  add_index "admin_orders", ["tax"], :name => "index_orders_on_tax"
+  add_index "admin_orders", ["total"], :name => "index_orders_on_total"
 
-  create_table "crm_payments", :force => true do |t|
+  create_table "admin_payments", :force => true do |t|
     t.string   "order_id"
     t.string   "user_id"
     t.string   "drivers_license_number"
@@ -1174,37 +1174,37 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "paypal_transaction_id"
   end
 
-  add_index "crm_payments", ["address_1"], :name => "index_payments_on_address_1"
-  add_index "crm_payments", ["address_2"], :name => "index_payments_on_address_2"
-  add_index "crm_payments", ["check_number"], :name => "index_payments_on_check_number"
-  add_index "crm_payments", ["city"], :name => "index_payments_on_city"
-  add_index "crm_payments", ["country"], :name => "index_payments_on_country"
-  add_index "crm_payments", ["credit_card_type"], :name => "index_payments_on_credit_card_type"
-  add_index "crm_payments", ["deposit_number"], :name => "index_payments_on_deposit_number"
-  add_index "crm_payments", ["drivers_license_number"], :name => "index_payments_on_drivers_license_number"
-  add_index "crm_payments", ["first_name"], :name => "index_payments_on_first_name"
-  add_index "crm_payments", ["last_name"], :name => "index_payments_on_last_name"
-  add_index "crm_payments", ["order_id"], :name => "index_payments_on_order_id"
-  add_index "crm_payments", ["state"], :name => "index_payments_on_state"
-  add_index "crm_payments", ["user_id"], :name => "index_payments_on_user_id"
-  add_index "crm_payments", ["zipcode"], :name => "index_payments_on_zipcode"
+  add_index "admin_payments", ["address_1"], :name => "index_payments_on_address_1"
+  add_index "admin_payments", ["address_2"], :name => "index_payments_on_address_2"
+  add_index "admin_payments", ["check_number"], :name => "index_payments_on_check_number"
+  add_index "admin_payments", ["city"], :name => "index_payments_on_city"
+  add_index "admin_payments", ["country"], :name => "index_payments_on_country"
+  add_index "admin_payments", ["credit_card_type"], :name => "index_payments_on_credit_card_type"
+  add_index "admin_payments", ["deposit_number"], :name => "index_payments_on_deposit_number"
+  add_index "admin_payments", ["drivers_license_number"], :name => "index_payments_on_drivers_license_number"
+  add_index "admin_payments", ["first_name"], :name => "index_payments_on_first_name"
+  add_index "admin_payments", ["last_name"], :name => "index_payments_on_last_name"
+  add_index "admin_payments", ["order_id"], :name => "index_payments_on_order_id"
+  add_index "admin_payments", ["state"], :name => "index_payments_on_state"
+  add_index "admin_payments", ["user_id"], :name => "index_payments_on_user_id"
+  add_index "admin_payments", ["zipcode"], :name => "index_payments_on_zipcode"
 
-  create_table "crm_platens", :force => true do |t|
+  create_table "admin_platens", :force => true do |t|
     t.string  "size"
     t.integer "inventory_id"
     t.integer "print_method_id"
     t.string  "print_method_text"
   end
 
-  add_index "crm_platens", ["inventory_id"], :name => "index_platens_on_inventory_id"
-  add_index "crm_platens", ["print_method_id"], :name => "index_platens_on_print_method_id"
-  add_index "crm_platens", ["print_method_text"], :name => "index_platens_on_print_method_text"
+  add_index "admin_platens", ["inventory_id"], :name => "index_platens_on_inventory_id"
+  add_index "admin_platens", ["print_method_id"], :name => "index_platens_on_print_method_id"
+  add_index "admin_platens", ["print_method_text"], :name => "index_platens_on_print_method_text"
 
-  create_table "crm_print_methods", :force => true do |t|
+  create_table "admin_print_methods", :force => true do |t|
     t.string "print_method"
   end
 
-  create_table "crm_proof_images", :force => true do |t|
+  create_table "admin_proof_images", :force => true do |t|
     t.integer  "parent_id"
     t.string   "content_type"
     t.string   "filename"
@@ -1222,16 +1222,16 @@ ActiveRecord::Schema.define(version: 1) do
     t.integer  "job_id"
   end
 
-  add_index "crm_proof_images", ["custom_order_id"], :name => "index_proof_images_on_custom_order_id"
-  add_index "crm_proof_images", ["job_id"], :name => "index_proof_images_on_job_id"
-  add_index "crm_proof_images", ["status"], :name => "index_proof_images_on_status"
+  add_index "admin_proof_images", ["custom_order_id"], :name => "index_proof_images_on_custom_order_id"
+  add_index "admin_proof_images", ["job_id"], :name => "index_proof_images_on_job_id"
+  add_index "admin_proof_images", ["status"], :name => "index_proof_images_on_status"
 
-  create_table "crm_queued_mails", :force => true do |t|
+  create_table "admin_queued_mails", :force => true do |t|
     t.text   "object"
     t.string "mailer"
   end
 
-  create_table "crm_retail_categories", :force => true do |t|
+  create_table "admin_retail_categories", :force => true do |t|
     t.integer  "parent_category_id", :default => 0
     t.string   "title"
     t.string   "image"
@@ -1249,18 +1249,18 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "redirect_url"
   end
 
-  add_index "crm_retail_categories", ["administrator_id"], :name => "index_retail_categories_on_administrator_id"
-  add_index "crm_retail_categories", ["parent_category_id"], :name => "index_retail_categories_on_parent_category_id"
+  add_index "admin_retail_categories", ["administrator_id"], :name => "index_retail_categories_on_administrator_id"
+  add_index "admin_retail_categories", ["parent_category_id"], :name => "index_retail_categories_on_parent_category_id"
 
-  create_table "crm_retail_categories_retail_products", :id => false, :force => true do |t|
+  create_table "admin_retail_categories_retail_products", :id => false, :force => true do |t|
     t.integer "retail_product_id",  :null => false
     t.integer "retail_category_id", :null => false
   end
 
-  add_index "crm_retail_categories_retail_products", ["retail_category_id"], :name => "index_retail_categories_retail_products_on_retail_category_id"
-  add_index "crm_retail_categories_retail_products", ["retail_product_id"], :name => "index_retail_categories_retail_products_on_retail_product_id"
+  add_index "admin_retail_categories_retail_products", ["retail_category_id"], :name => "index_retail_categories_retail_products_on_retail_category_id"
+  add_index "admin_retail_categories_retail_products", ["retail_product_id"], :name => "index_retail_categories_retail_products_on_retail_product_id"
 
-  create_table "crm_retail_colors", :force => true do |t|
+  create_table "admin_retail_colors", :force => true do |t|
     t.string "color"
     t.string "american_apparel_color"
     t.string "gildan_color"
@@ -1269,7 +1269,7 @@ ActiveRecord::Schema.define(version: 1) do
     t.string "hanes_color"
   end
 
-  create_table "crm_retail_inventories_sales", :force => true do |t|
+  create_table "admin_retail_inventories_sales", :force => true do |t|
     t.string   "added_by"
     t.integer  "inventory_id"
     t.integer  "quantity"
@@ -1278,9 +1278,9 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  add_index "crm_retail_inventories_sales", ["inventory_id"], :name => "index_retail_inventories_sales_on_inventory_id"
+  add_index "admin_retail_inventories_sales", ["inventory_id"], :name => "index_retail_inventories_sales_on_inventory_id"
 
-  create_table "crm_retail_misprints", :force => true do |t|
+  create_table "admin_retail_misprints", :force => true do |t|
     t.boolean  "used",              :default => false
     t.string   "reason"
     t.integer  "retail_product_id"
@@ -1289,11 +1289,11 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  add_index "crm_retail_misprints", ["inventory_id"], :name => "index_retail_misprints_on_inventory_id"
-  add_index "crm_retail_misprints", ["retail_product_id"], :name => "index_retail_misprints_on_retail_product_id"
-  add_index "crm_retail_misprints", ["used"], :name => "index_retail_misprints_on_used"
+  add_index "admin_retail_misprints", ["inventory_id"], :name => "index_retail_misprints_on_inventory_id"
+  add_index "admin_retail_misprints", ["retail_product_id"], :name => "index_retail_misprints_on_retail_product_id"
+  add_index "admin_retail_misprints", ["used"], :name => "index_retail_misprints_on_used"
 
-  create_table "crm_retail_product_colors", :force => true do |t|
+  create_table "admin_retail_product_colors", :force => true do |t|
     t.integer  "retail_product_id"
     t.integer  "retail_color_id"
     t.string   "image_type"
@@ -1310,11 +1310,11 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "product_code"
   end
 
-  add_index "crm_retail_product_colors", ["print_method_id"], :name => "index_retail_product_colors_on_print_method_id"
-  add_index "crm_retail_product_colors", ["retail_color_id"], :name => "index_retail_product_colors_on_retail_color_id"
-  add_index "crm_retail_product_colors", ["retail_product_id"], :name => "index_retail_product_colors_on_retail_product_id"
+  add_index "admin_retail_product_colors", ["print_method_id"], :name => "index_retail_product_colors_on_print_method_id"
+  add_index "admin_retail_product_colors", ["retail_color_id"], :name => "index_retail_product_colors_on_retail_color_id"
+  add_index "admin_retail_product_colors", ["retail_product_id"], :name => "index_retail_product_colors_on_retail_product_id"
 
-  create_table "crm_retail_product_images", :force => true do |t|
+  create_table "admin_retail_product_images", :force => true do |t|
     t.integer  "retail_product_id"
     t.string   "image_type"
     t.integer  "parent_id"
@@ -1328,14 +1328,14 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  create_table "crm_retail_product_options", :force => true do |t|
+  create_table "admin_retail_product_options", :force => true do |t|
     t.integer "retail_product_id"
     t.string  "option_prompt"
     t.string  "option_input_type"
     t.decimal "price",             :precision => 8, :scale => 2
   end
 
-  create_table "crm_retail_products", :force => true do |t|
+  create_table "admin_retail_products", :force => true do |t|
     t.string   "title"
     t.string   "code"
     t.text     "description"
@@ -1363,20 +1363,20 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "redirect_url"
   end
 
-  add_index "crm_retail_products", ["active"], :name => "index_retail_products_on_active"
-  add_index "crm_retail_products", ["popular"], :name => "index_retail_products_on_popular"
-  add_index "crm_retail_products", ["print_method_id"], :name => "index_retail_products_on_print_method_id"
-  add_index "crm_retail_products", ["taxable"], :name => "index_retail_products_on_taxable"
+  add_index "admin_retail_products", ["active"], :name => "index_retail_products_on_active"
+  add_index "admin_retail_products", ["popular"], :name => "index_retail_products_on_popular"
+  add_index "admin_retail_products", ["print_method_id"], :name => "index_retail_products_on_print_method_id"
+  add_index "admin_retail_products", ["taxable"], :name => "index_retail_products_on_taxable"
 
-  create_table "crm_retail_products_similar_retail_products", :id => false, :force => true do |t|
+  create_table "admin_retail_products_similar_retail_products", :id => false, :force => true do |t|
     t.integer "retail_product_id"
     t.integer "similar_retail_product_id"
   end
 
-  add_index "crm_retail_products_similar_retail_products", ["retail_product_id"], :name => "retail_product_id"
-  add_index "crm_retail_products_similar_retail_products", ["similar_retail_product_id"], :name => "similar_retail_product_id"
+  add_index "admin_retail_products_similar_retail_products", ["retail_product_id"], :name => "retail_product_id"
+  add_index "admin_retail_products_similar_retail_products", ["similar_retail_product_id"], :name => "similar_retail_product_id"
 
-  create_table "crm_screens", :force => true do |t|
+  create_table "admin_screens", :force => true do |t|
     t.string  "label"
     t.integer "job_id"
     t.string  "description"
@@ -1389,26 +1389,26 @@ ActiveRecord::Schema.define(version: 1) do
     t.string  "notes"
   end
 
-  add_index "crm_screens", ["emulsion_type"], :name => "index_screens_on_emulsion_type"
-  add_index "crm_screens", ["film_type"], :name => "index_screens_on_film_type"
-  add_index "crm_screens", ["frame_type"], :name => "index_screens_on_frame_type"
-  add_index "crm_screens", ["job_id"], :name => "index_screens_on_job_id"
-  add_index "crm_screens", ["label"], :name => "index_screens_on_label"
-  add_index "crm_screens", ["print_location"], :name => "index_screens_on_print_location"
-  add_index "crm_screens", ["quantity"], :name => "index_screens_on_quantity"
-  add_index "crm_screens", ["screen_mesh"], :name => "index_screens_on_screen_mesh"
+  add_index "admin_screens", ["emulsion_type"], :name => "index_screens_on_emulsion_type"
+  add_index "admin_screens", ["film_type"], :name => "index_screens_on_film_type"
+  add_index "admin_screens", ["frame_type"], :name => "index_screens_on_frame_type"
+  add_index "admin_screens", ["job_id"], :name => "index_screens_on_job_id"
+  add_index "admin_screens", ["label"], :name => "index_screens_on_label"
+  add_index "admin_screens", ["print_location"], :name => "index_screens_on_print_location"
+  add_index "admin_screens", ["quantity"], :name => "index_screens_on_quantity"
+  add_index "admin_screens", ["screen_mesh"], :name => "index_screens_on_screen_mesh"
 
-  create_table "crm_sessions", :force => true do |t|
+  create_table "admin_sessions", :force => true do |t|
     t.string   "session_id",                     :null => false
     t.text     "data",       :limit => 16777215, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "crm_sessions", ["session_id"], :name => "index_sessions_on_session_id"
-  add_index "crm_sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
+  add_index "admin_sessions", ["session_id"], :name => "index_sessions_on_session_id"
+  add_index "admin_sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
-  create_table "crm_shipments", :force => true do |t|
+  create_table "admin_shipments", :force => true do |t|
     t.integer  "order_id"
     t.string   "shipping_method"
     t.string   "tracking_number"
@@ -1420,13 +1420,13 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "shipped_by"
   end
 
-  add_index "crm_shipments", ["cost"], :name => "index_shipments_on_cost"
-  add_index "crm_shipments", ["deleted"], :name => "index_shipments_on_deleted"
-  add_index "crm_shipments", ["order_id"], :name => "index_shipments_on_order_id"
-  add_index "crm_shipments", ["shipping_method"], :name => "index_shipments_on_shipping_method"
-  add_index "crm_shipments", ["tracking_number"], :name => "index_shipments_on_tracking_number"
+  add_index "admin_shipments", ["cost"], :name => "index_shipments_on_cost"
+  add_index "admin_shipments", ["deleted"], :name => "index_shipments_on_deleted"
+  add_index "admin_shipments", ["order_id"], :name => "index_shipments_on_order_id"
+  add_index "admin_shipments", ["shipping_method"], :name => "index_shipments_on_shipping_method"
+  add_index "admin_shipments", ["tracking_number"], :name => "index_shipments_on_tracking_number"
 
-  create_table "crm_sites", :force => true do |t|
+  create_table "admin_sites", :force => true do |t|
     t.string   "domain"
     t.string   "page_title"
     t.string   "company_name"
@@ -1439,7 +1439,7 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  create_table "crm_stock_items", :force => true do |t|
+  create_table "admin_stock_items", :force => true do |t|
     t.string   "name"
     t.integer  "retail_product_id"
     t.string   "size"
@@ -1453,12 +1453,12 @@ ActiveRecord::Schema.define(version: 1) do
     t.integer  "restock_time",      :default => 0
   end
 
-  add_index "crm_stock_items", ["color"], :name => "index_stock_items_on_color"
-  add_index "crm_stock_items", ["retail_product_id"], :name => "index_stock_items_on_retail_product_id"
-  add_index "crm_stock_items", ["size"], :name => "index_stock_items_on_size"
-  add_index "crm_stock_items", ["stock_level"], :name => "index_stock_items_on_stock_level"
+  add_index "admin_stock_items", ["color"], :name => "index_stock_items_on_color"
+  add_index "admin_stock_items", ["retail_product_id"], :name => "index_stock_items_on_retail_product_id"
+  add_index "admin_stock_items", ["size"], :name => "index_stock_items_on_size"
+  add_index "admin_stock_items", ["stock_level"], :name => "index_stock_items_on_stock_level"
 
-  create_table "crm_supplier_locations", :force => true do |t|
+  create_table "admin_supplier_locations", :force => true do |t|
     t.integer "supplier_id"
     t.string  "location"
     t.integer "transit_time"
@@ -1467,28 +1467,28 @@ ActiveRecord::Schema.define(version: 1) do
     t.boolean "mill_direct",  :default => false
   end
 
-  create_table "crm_suppliers", :force => true do |t|
+  create_table "admin_suppliers", :force => true do |t|
     t.string "name"
     t.string "supplier_type"
     t.string "website"
     t.string "shipment_method"
   end
 
-  create_table "crm_taggings", :force => true do |t|
+  create_table "admin_taggings", :force => true do |t|
     t.integer  "tag_id"
     t.integer  "taggable_id"
     t.string   "taggable_type"
     t.datetime "created_at"
   end
 
-  add_index "crm_taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
-  add_index "crm_taggings", ["taggable_id", "taggable_type"], :name => "index_taggings_on_taggable_id_and_taggable_type"
+  add_index "admin_taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
+  add_index "admin_taggings", ["taggable_id", "taggable_type"], :name => "index_taggings_on_taggable_id_and_taggable_type"
 
-  create_table "crm_tags", :force => true do |t|
+  create_table "admin_tags", :force => true do |t|
     t.string "name"
   end
 
-  create_table "crm_users", :force => true do |t|
+  create_table "admin_users", :force => true do |t|
     t.string   "email"
     t.string   "type"
     t.boolean  "account_enabled",                         :default => false
@@ -1512,10 +1512,10 @@ ActiveRecord::Schema.define(version: 1) do
     t.string   "address_3"
   end
 
-  add_index "crm_users", ["account_enabled"], :name => "index_users_on_account_enabled"
-  add_index "crm_users", ["city"], :name => "index_users_on_city"
-  add_index "crm_users", ["email"], :name => "index_users_on_email"
-  add_index "crm_users", ["first_name"], :name => "index_users_on_first_name"
-  add_index "crm_users", ["last_name"], :name => "index_users_on_last_name"
-  add_index "crm_users", ["type"], :name => "index_users_on_type"
+  add_index "admin_users", ["account_enabled"], :name => "index_users_on_account_enabled"
+  add_index "admin_users", ["city"], :name => "index_users_on_city"
+  add_index "admin_users", ["email"], :name => "index_users_on_email"
+  add_index "admin_users", ["first_name"], :name => "index_users_on_first_name"
+  add_index "admin_users", ["last_name"], :name => "index_users_on_last_name"
+  add_index "admin_users", ["type"], :name => "index_users_on_type"
 end
