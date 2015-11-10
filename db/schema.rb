@@ -1,4 +1,17 @@
-ActiveRecord::Schema.define(version: 1) do
+# encoding: UTF-8
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# Note that this schema.rb definition is the authoritative source for your
+# database schema. If you need to create the application database on another
+# system, you should be using db:schema:load, not running all the migrations
+# from scratch. The latter is a flawed and unsustainable approach (the more migrations
+# you'll amass, the slower it'll run and the greater likelihood for issues).
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema.define(version: 20151001214414) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "trackable_id",   limit: 4
@@ -16,6 +29,671 @@ ActiveRecord::Schema.define(version: 1) do
   add_index "activities", ["owner_id", "owner_type"], name: "index_activities_on_owner_id_and_owner_type", using: :btree
   add_index "activities", ["recipient_id", "recipient_type"], name: "index_activities_on_recipient_id_and_recipient_type", using: :btree
   add_index "activities", ["trackable_id", "trackable_type"], name: "index_activities_on_trackable_id_and_trackable_type", using: :btree
+
+  create_table "admin_artworks", force: :cascade do |t|
+    t.integer  "custom_order_id",  limit: 4
+    t.integer  "administrator_id", limit: 4
+    t.integer  "parent_id",        limit: 4
+    t.string   "content_type",     limit: 255
+    t.string   "filename",         limit: 255
+    t.string   "thumbnail",        limit: 255
+    t.integer  "size",             limit: 4
+    t.integer  "width",            limit: 4
+    t.integer  "height",           limit: 4
+    t.text     "description",      limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "admin_artworks", ["administrator_id"], name: "index_artworks_on_administrator_id", using: :btree
+  add_index "admin_artworks", ["custom_order_id"], name: "index_artworks_on_custom_order_id", using: :btree
+
+  create_table "admin_blog_entries", force: :cascade do |t|
+    t.integer  "author_id",  limit: 4
+    t.string   "title",      limit: 255
+    t.text     "body",       limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "admin_blog_entries", ["author_id"], name: "index_blog_entries_on_author_id", using: :btree
+
+  create_table "admin_brands", force: :cascade do |t|
+    t.string "name",     limit: 255
+    t.string "sku_code", limit: 255
+  end
+
+  add_index "admin_brands", ["name"], name: "index_brands_on_name", using: :btree
+  add_index "admin_brands", ["sku_code"], name: "index_brands_on_sku_code", using: :btree
+
+  create_table "admin_comments", force: :cascade do |t|
+    t.string   "title",            limit: 50,  default: ""
+    t.string   "comment",          limit: 255, default: ""
+    t.datetime "created_at",                                null: false
+    t.integer  "commentable_id",   limit: 4,   default: 0,  null: false
+    t.string   "commentable_type", limit: 15,  default: "", null: false
+    t.integer  "user_id",          limit: 4,   default: 0,  null: false
+  end
+
+  add_index "admin_comments", ["commentable_id"], name: "index_comments_on_commentable_id", using: :btree
+  add_index "admin_comments", ["user_id"], name: "index_comments_on_user_id", using: :btree
+
+  create_table "admin_inventories", force: :cascade do |t|
+    t.string  "name",               limit: 255
+    t.integer "brand_id",           limit: 4
+    t.string  "catalog_number",     limit: 255
+    t.string  "color",              limit: 255
+    t.string  "size",               limit: 255
+    t.text    "description",        limit: 65535
+    t.text    "image",              limit: 65535
+    t.integer "lbs",                limit: 4,     default: 0
+    t.integer "oz",                 limit: 4,     default: 0
+    t.integer "sort_order",         limit: 4,     default: 0
+    t.integer "inventory_size_id",  limit: 4
+    t.integer "inventory_color_id", limit: 4
+    t.integer "inventory_line_id",  limit: 4
+    t.integer "retail_stock_level", limit: 4,     default: 0
+  end
+
+  add_index "admin_inventories", ["brand_id"], name: "index_inventories_on_brand_id", using: :btree
+  add_index "admin_inventories", ["catalog_number"], name: "index_inventories_on_catalog_number", using: :btree
+  add_index "admin_inventories", ["color"], name: "index_inventories_on_color", using: :btree
+  add_index "admin_inventories", ["inventory_color_id"], name: "index_inventories_on_inventory_color_id", using: :btree
+  add_index "admin_inventories", ["inventory_line_id"], name: "index_inventories_on_inventory_line_id", using: :btree
+  add_index "admin_inventories", ["inventory_size_id"], name: "index_inventories_on_inventory_size_id", using: :btree
+  add_index "admin_inventories", ["name"], name: "index_inventories_on_name", using: :btree
+  add_index "admin_inventories", ["size"], name: "index_inventories_on_size", using: :btree
+
+  create_table "admin_inventories_retail_products", force: :cascade do |t|
+    t.integer "retail_product_id", limit: 4,                                       null: false
+    t.integer "inventory_id",      limit: 4,                                       null: false
+    t.decimal "upcharge",                    precision: 8, scale: 2, default: 0.0
+  end
+
+  add_index "admin_inventories_retail_products", ["inventory_id"], name: "index_inventories_retail_products_on_inventory_id", using: :btree
+  add_index "admin_inventories_retail_products", ["retail_product_id"], name: "index_inventories_retail_products_on_retail_product_id", using: :btree
+
+  create_table "admin_inventory_colors", force: :cascade do |t|
+    t.string "color",    limit: 255
+    t.string "sku_code", limit: 255
+  end
+
+  add_index "admin_inventory_colors", ["sku_code"], name: "index_inventory_colors_on_sku_code", using: :btree
+
+  create_table "admin_inventory_lines", force: :cascade do |t|
+    t.integer "brand_id",       limit: 4
+    t.string  "catalog_number", limit: 255
+    t.string  "name",           limit: 255
+    t.string  "description",    limit: 255
+    t.string  "sku_code",       limit: 255
+  end
+
+  add_index "admin_inventory_lines", ["brand_id"], name: "index_inventory_lines_on_brand_id", using: :btree
+  add_index "admin_inventory_lines", ["sku_code"], name: "index_inventory_lines_on_sku_code", using: :btree
+
+  create_table "admin_inventory_order_line_items", force: :cascade do |t|
+    t.integer "supplier_location_id", limit: 4
+    t.integer "line_item_id",         limit: 4
+    t.integer "inventory_order_id",   limit: 4
+  end
+
+  create_table "admin_inventory_orders", force: :cascade do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "admin_inventory_sizes", force: :cascade do |t|
+    t.string  "size",       limit: 255
+    t.integer "sort_order", limit: 4
+    t.string  "sku_code",   limit: 255
+  end
+
+  add_index "admin_inventory_sizes", ["sku_code"], name: "index_inventory_sizes_on_sku_code", using: :btree
+
+  create_table "admin_iso_countries", force: :cascade do |t|
+    t.string "iso2", limit: 255
+    t.string "iso3", limit: 255
+    t.string "name", limit: 255
+  end
+
+  create_table "admin_jobs", force: :cascade do |t|
+    t.string   "title",                     limit: 255
+    t.string   "type",                      limit: 255
+    t.integer  "custom_order_id",           limit: 4
+    t.boolean  "rtp_art_approved",                                                default: false
+    t.boolean  "scheduled",                                                       default: false
+    t.datetime "print_date"
+    t.boolean  "artwork_burned",                                                  default: false
+    t.boolean  "ordered",                                                         default: false
+    t.boolean  "printed",                                                         default: false
+    t.boolean  "inventoried",                                                     default: false
+    t.boolean  "sent_to_embroiderer",                                             default: false
+    t.boolean  "received_from_embroiderer",                                       default: false
+    t.text     "description",               limit: 65535
+    t.decimal  "subtotal",                                precision: 8, scale: 2
+    t.decimal  "tax",                                     precision: 8, scale: 2
+    t.decimal  "total",                                   precision: 8, scale: 2
+    t.decimal  "discounts",                               precision: 8, scale: 2
+    t.integer  "pieces",                    limit: 4
+    t.boolean  "films_printed",                                                   default: false
+    t.boolean  "art_submitted",                                                   default: false
+    t.string   "inventory_location",        limit: 255
+    t.string   "inventoried_by",            limit: 255
+    t.boolean  "proof_requested",                                                 default: false
+    t.integer  "whos_proofing",             limit: 4
+    t.boolean  "partially_inventoried",                                           default: false
+    t.boolean  "art_sent_to_embroiderer",                                         default: false
+    t.boolean  "digital_white_ink",                                               default: false
+    t.boolean  "digital_file_generated",                                          default: false
+    t.boolean  "digital_file_requested",                                          default: false
+  end
+
+  add_index "admin_jobs", ["art_sent_to_embroiderer"], name: "index_jobs_on_art_sent_to_embroiderer", using: :btree
+  add_index "admin_jobs", ["artwork_burned"], name: "index_jobs_on_artwork_burned", using: :btree
+  add_index "admin_jobs", ["custom_order_id"], name: "index_jobs_on_custom_order_id", using: :btree
+  add_index "admin_jobs", ["digital_file_generated"], name: "index_jobs_on_digital_file_generated", using: :btree
+  add_index "admin_jobs", ["digital_file_requested"], name: "index_jobs_on_digital_file_requested", using: :btree
+  add_index "admin_jobs", ["inventoried"], name: "index_jobs_on_inventoried", using: :btree
+  add_index "admin_jobs", ["ordered"], name: "index_jobs_on_ordered", using: :btree
+  add_index "admin_jobs", ["print_date"], name: "index_jobs_on_print_date", using: :btree
+  add_index "admin_jobs", ["printed"], name: "index_jobs_on_printed", using: :btree
+  add_index "admin_jobs", ["received_from_embroiderer"], name: "index_jobs_on_received_from_embroiderer", using: :btree
+  add_index "admin_jobs", ["rtp_art_approved"], name: "index_jobs_on_rtp_art_approved", using: :btree
+  add_index "admin_jobs", ["scheduled"], name: "index_jobs_on_scheduled", using: :btree
+  add_index "admin_jobs", ["sent_to_embroiderer"], name: "index_jobs_on_sent_to_embroiderer", using: :btree
+  add_index "admin_jobs", ["type"], name: "index_jobs_on_type", using: :btree
+
+  create_table "admin_line_items", force: :cascade do |t|
+    t.integer  "order_id",          limit: 4
+    t.integer  "inventory_id",      limit: 4
+    t.string   "product",           limit: 255
+    t.text     "description",       limit: 65535
+    t.string   "item_options",      limit: 255
+    t.decimal  "unit_price",                      precision: 8, scale: 2
+    t.integer  "quantity",          limit: 4
+    t.decimal  "total_price",                     precision: 8, scale: 2
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "retail_product_id", limit: 4
+    t.boolean  "taxable"
+    t.integer  "job_id",            limit: 4
+    t.integer  "stock_item_id",     limit: 4
+    t.boolean  "ordered",                                                 default: false
+  end
+
+  add_index "admin_line_items", ["inventory_id"], name: "index_line_items_on_inventory_id", using: :btree
+  add_index "admin_line_items", ["job_id"], name: "index_line_items_on_job_id", using: :btree
+  add_index "admin_line_items", ["order_id"], name: "index_line_items_on_order_id", using: :btree
+  add_index "admin_line_items", ["product"], name: "index_line_items_on_product", using: :btree
+  add_index "admin_line_items", ["quantity"], name: "index_line_items_on_quantity", using: :btree
+  add_index "admin_line_items", ["total_price"], name: "index_line_items_on_total_price", using: :btree
+  add_index "admin_line_items", ["unit_price"], name: "index_line_items_on_unit_price", using: :btree
+
+  create_table "admin_name_and_numbers", force: :cascade do |t|
+    t.integer  "order_id",     limit: 4
+    t.integer  "job_id",       limit: 4
+    t.integer  "inventory_id", limit: 4
+    t.string   "name",         limit: 255
+    t.string   "number",       limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "admin_orders", force: :casecade do |t|
+    t.integer  "customer_id",               limit: 4
+    t.string   "delivery_first_name",       limit: 255
+    t.string   "delivery_last_name",        limit: 255
+    t.string   "delivery_address_1",        limit: 255
+    t.string   "delivery_address_2",        limit: 255
+    t.string   "delivery_city",             limit: 255
+    t.string   "delivery_state",            limit: 255
+    t.string   "delivery_zipcode",          limit: 255
+    t.string   "delivery_country",          limit: 255
+    t.integer  "administrator_id",          limit: 4
+    t.string   "number",                    limit: 255
+    t.string   "type",                      limit: 255
+    t.decimal  "subtotal",                                precision: 8, scale: 2
+    t.decimal  "total",                                   precision: 8, scale: 2
+    t.decimal  "tax",                                     precision: 8, scale: 2
+    t.decimal  "shipping",                                precision: 8, scale: 2
+    t.decimal  "balance",                                 precision: 8, scale: 2
+    t.string   "status",                    limit: 255,                           default: "Pending"
+    t.string   "ip",                        limit: 255
+    t.text     "customer_comments",         limit: 65535
+    t.datetime "ship_date"
+    t.string   "ship_method",               limit: 255
+    t.text     "customer_description",      limit: 65535
+    t.text     "approximate_quantity",      limit: 65535
+    t.date     "delivery_deadline"
+    t.boolean  "is_shipped",                                                      default: false
+    t.date     "shipped_deadline"
+    t.boolean  "is_ink_in_stock",                                                 default: false
+    t.date     "ink_ordered_deadline"
+    t.boolean  "are_garments_in_stock",                                           default: false
+    t.date     "garments_ordered_deadline"
+    t.string   "order_source",              limit: 255
+    t.integer  "bid_request_id",            limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "is_tax_exempt",                                                   default: false
+    t.string   "tax_id_number",             limit: 255
+    t.boolean  "are_garments_ordered",                                            default: false
+    t.string   "title",                     limit: 255,                           default: ""
+    t.boolean  "redo",                                                            default: false
+    t.string   "whos_fault",                limit: 255,                           default: ""
+    t.string   "redo_reason",               limit: 255,                           default: ""
+    t.string   "delivery_phone_number",     limit: 255
+    t.decimal  "discounts",                               precision: 8, scale: 2
+    t.boolean  "limited_retail_run",                                              default: false
+    t.string   "limited_retail_run_title",  limit: 255
+    t.string   "terms",                     limit: 255
+    t.string   "po",                        limit: 255
+    t.integer  "commission_salesperson_id", limit: 4
+    t.decimal  "commission_amount",                       precision: 8, scale: 2, default: 0.0
+    t.boolean  "scheduled",                                                       default: false
+    t.date     "scheduled_print_date"
+    t.string   "delivery_company",          limit: 255
+    t.string   "delivery_address_3",        limit: 255
+  end
+
+  add_index "admin_orders", ["are_garments_in_stock"], name: "index_orders_on_are_garments_in_stock", using: :btree
+  add_index "admin_orders", ["balance"], name: "index_orders_on_balance", using: :btree
+  add_index "admin_orders", ["bid_request_id"], name: "index_orders_on_bid_request_id", using: :btree
+  add_index "admin_orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
+  add_index "admin_orders", ["delivery_address_1"], name: "index_orders_on_delivery_address_1", using: :btree
+  add_index "admin_orders", ["delivery_address_2"], name: "index_orders_on_delivery_address_2", using: :btree
+  add_index "admin_orders", ["delivery_city"], name: "index_orders_on_delivery_city", using: :btree
+  add_index "admin_orders", ["delivery_country"], name: "index_orders_on_delivery_country", using: :btree
+  add_index "admin_orders", ["delivery_deadline"], name: "index_orders_on_delivery_deadline", using: :btree
+  add_index "admin_orders", ["delivery_first_name"], name: "index_orders_on_delivery_first_name", using: :btree
+  add_index "admin_orders", ["delivery_last_name"], name: "index_orders_on_delivery_last_name", using: :btree
+  add_index "admin_orders", ["delivery_state"], name: "index_orders_on_delivery_state", using: :btree
+  add_index "admin_orders", ["delivery_zipcode"], name: "index_orders_on_delivery_zipcode", using: :btree
+  add_index "admin_orders", ["garments_ordered_deadline"], name: "index_orders_on_garments_ordered_deadline", using: :btree
+  add_index "admin_orders", ["ink_ordered_deadline"], name: "index_orders_on_ink_ordered_deadline", using: :btree
+  add_index "admin_orders", ["is_ink_in_stock"], name: "index_orders_on_is_ink_in_stock", using: :btree
+  add_index "admin_orders", ["is_shipped"], name: "index_orders_on_is_shipped", using: :btree
+  add_index "admin_orders", ["is_tax_exempt"], name: "index_orders_on_is_tax_exempt", using: :btree
+  add_index "admin_orders", ["number"], name: "index_orders_on_number", using: :btree
+  add_index "admin_orders", ["order_source"], name: "index_orders_on_order_source", using: :btree
+  add_index "admin_orders", ["ship_date"], name: "index_orders_on_ship_date", using: :btree
+  add_index "admin_orders", ["ship_method"], name: "index_orders_on_ship_method", using: :btree
+  add_index "admin_orders", ["shipped_deadline"], name: "index_orders_on_shipped_deadline", using: :btree
+  add_index "admin_orders", ["shipping"], name: "index_orders_on_shipping", using: :btree
+  add_index "admin_orders", ["status"], name: "index_orders_on_status", using: :btree
+  add_index "admin_orders", ["subtotal"], name: "index_orders_on_subtotal", using: :btree
+  add_index "admin_orders", ["tax"], name: "index_orders_on_tax", using: :btree
+  add_index "admin_orders", ["total"], name: "index_orders_on_total", using: :btree
+
+  create_table "admin_payments", force: :cascade do |t|
+    t.string   "order_id",               limit: 255
+    t.string   "user_id",                limit: 255
+    t.string   "drivers_license_number", limit: 255
+    t.integer  "check_number",           limit: 4
+    t.string   "credit_card_number",     limit: 255
+    t.string   "credit_card_type",       limit: 255
+    t.date     "credit_card_exp_date"
+    t.string   "deposit_number",         limit: 255
+    t.string   "first_name",             limit: 255
+    t.string   "last_name",              limit: 255
+    t.string   "address_1",              limit: 255
+    t.string   "address_2",              limit: 255
+    t.string   "city",                   limit: 255
+    t.string   "state",                  limit: 255
+    t.string   "zipcode",                limit: 255
+    t.string   "country",                limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "payment_method",         limit: 255
+    t.decimal  "amount",                             precision: 8, scale: 2
+    t.string   "email",                  limit: 255
+    t.string   "paypal_transaction_id",  limit: 255
+  end
+
+  add_index "admin_payments", ["address_1"], name: "index_payments_on_address_1", using: :btree
+  add_index "admin_payments", ["address_2"], name: "index_payments_on_address_2", using: :btree
+  add_index "admin_payments", ["check_number"], name: "index_payments_on_check_number", using: :btree
+  add_index "admin_payments", ["city"], name: "index_payments_on_city", using: :btree
+  add_index "admin_payments", ["country"], name: "index_payments_on_country", using: :btree
+  add_index "admin_payments", ["credit_card_type"], name: "index_payments_on_credit_card_type", using: :btree
+  add_index "admin_payments", ["deposit_number"], name: "index_payments_on_deposit_number", using: :btree
+  add_index "admin_payments", ["drivers_license_number"], name: "index_payments_on_drivers_license_number", using: :btree
+  add_index "admin_payments", ["first_name"], name: "index_payments_on_first_name", using: :btree
+  add_index "admin_payments", ["last_name"], name: "index_payments_on_last_name", using: :btree
+  add_index "admin_payments", ["order_id"], name: "index_payments_on_order_id", using: :btree
+  add_index "admin_payments", ["state"], name: "index_payments_on_state", using: :btree
+  add_index "admin_payments", ["user_id"], name: "index_payments_on_user_id", using: :btree
+  add_index "admin_payments", ["zipcode"], name: "index_payments_on_zipcode", using: :btree
+
+  create_table "admin_platens", force: :cascade do |t|
+    t.string  "size",              limit: 255
+    t.integer "inventory_id",      limit: 4
+    t.integer "print_method_id",   limit: 4
+    t.string  "print_method_text", limit: 255
+  end
+
+  add_index "admin_platens", ["inventory_id"], name: "index_platens_on_inventory_id", using: :btree
+  add_index "admin_platens", ["print_method_id"], name: "index_platens_on_print_method_id", using: :btree
+  add_index "admin_platens", ["print_method_text"], name: "index_platens_on_print_method_text", using: :btree
+
+  create_table "admin_print_methods", force: :cascade do |t|
+    t.string "print_method", limit: 255
+  end
+
+  create_table "admin_proof_images", force: :cascade do |t|
+    t.integer  "parent_id",        limit: 4
+    t.string   "content_type",     limit: 255
+    t.string   "filename",         limit: 255
+    t.string   "thumbnail",        limit: 255
+    t.integer  "size",             limit: 4
+    t.integer  "width",            limit: 4
+    t.integer  "height",           limit: 4
+    t.integer  "custom_order_id",  limit: 4
+    t.text     "description",      limit: 65535
+    t.string   "status",           limit: 255,   default: "Pending"
+    t.string   "initials",         limit: 255
+    t.text     "rejection_reason", limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "job_id",           limit: 4
+  end
+
+  add_index "admin_proof_images", ["custom_order_id"], name: "index_proof_images_on_custom_order_id", using: :btree
+  add_index "admin_proof_images", ["job_id"], name: "index_proof_images_on_job_id", using: :btree
+  add_index "admin_proof_images", ["status"], name: "index_proof_images_on_status", using: :btree
+
+  create_table "admin_queued_mails", force: :cascade do |t|
+    t.text   "object", limit: 65535
+    t.string "mailer", limit: 255
+  end
+
+  create_table "admin_retail_categories", force: :cascade do |t|
+    t.integer  "parent_category_id", limit: 4,   default: 0
+    t.string   "title",              limit: 255
+    t.string   "image",              limit: 255
+    t.integer  "administrator_id",   limit: 4,   default: 1
+    t.integer  "parent_id",          limit: 4
+    t.string   "content_type",       limit: 255
+    t.string   "filename",           limit: 255
+    t.string   "thumbnail",          limit: 255
+    t.integer  "size",               limit: 4
+    t.integer  "width",              limit: 4
+    t.integer  "height",             limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "active",                         default: true
+    t.string   "redirect_url",       limit: 255
+  end
+
+  add_index "admin_retail_categories", ["administrator_id"], name: "index_retail_categories_on_administrator_id", using: :btree
+  add_index "admin_retail_categories", ["parent_category_id"], name: "index_retail_categories_on_parent_category_id", using: :btree
+
+  create_table "admin_retail_categories_retail_products", id: false, force: :cascade do |t|
+    t.integer "retail_product_id",  limit: 4, null: false
+    t.integer "retail_category_id", limit: 4, null: false
+  end
+
+  add_index "admin_retail_categories_retail_products", ["retail_category_id"], name: "index_retail_categories_retail_products_on_retail_category_id", using: :btree
+  add_index "admin_retail_categories_retail_products", ["retail_product_id"], name: "index_retail_categories_retail_products_on_retail_product_id", using: :btree
+
+  create_table "admin_retail_colors", force: :cascade do |t|
+    t.string "color",                  limit: 255
+    t.string "american_apparel_color", limit: 255
+    t.string "gildan_color",           limit: 255
+    t.string "port_and_co_color",      limit: 255
+    t.string "anvil_color",            limit: 255
+    t.string "hanes_color",            limit: 255
+  end
+
+  create_table "admin_retail_inventories_sales", force: :cascade do |t|
+    t.string   "added_by",     limit: 255
+    t.integer  "inventory_id", limit: 4
+    t.integer  "quantity",     limit: 4
+    t.integer  "order_id",     limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "admin_retail_inventories_sales", ["inventory_id"], name: "index_retail_inventories_sales_on_inventory_id", using: :btree
+
+  create_table "admin_retail_misprints", force: :cascade do |t|
+    t.boolean  "used",                          default: false
+    t.string   "reason",            limit: 255
+    t.integer  "retail_product_id", limit: 4
+    t.integer  "inventory_id",      limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "admin_retail_misprints", ["inventory_id"], name: "index_retail_misprints_on_inventory_id", using: :btree
+  add_index "admin_retail_misprints", ["retail_product_id"], name: "index_retail_misprints_on_retail_product_id", using: :btree
+  add_index "admin_retail_misprints", ["used"], name: "index_retail_misprints_on_used", using: :btree
+
+  create_table "admin_retail_product_colors", force: :cascade do |t|
+    t.integer  "retail_product_id", limit: 4
+    t.integer  "retail_color_id",   limit: 4
+    t.string   "image_type",        limit: 255
+    t.integer  "parent_id",         limit: 4
+    t.string   "content_type",      limit: 255
+    t.string   "filename",          limit: 255
+    t.string   "thumbnail",         limit: 255
+    t.integer  "size",              limit: 4
+    t.integer  "width",             limit: 4
+    t.integer  "height",            limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "print_method_id",   limit: 4
+    t.string   "product_code",      limit: 255
+  end
+
+  add_index "admin_retail_product_colors", ["print_method_id"], name: "index_retail_product_colors_on_print_method_id", using: :btree
+  add_index "admin_retail_product_colors", ["retail_color_id"], name: "index_retail_product_colors_on_retail_color_id", using: :btree
+  add_index "admin_retail_product_colors", ["retail_product_id"], name: "index_retail_product_colors_on_retail_product_id", using: :btree
+
+  create_table "admin_retail_product_images", force: :cascade do |t|
+    t.integer  "retail_product_id", limit: 4
+    t.string   "image_type",        limit: 255
+    t.integer  "parent_id",         limit: 4
+    t.string   "content_type",      limit: 255
+    t.string   "filename",          limit: 255
+    t.string   "thumbnail",         limit: 255
+    t.integer  "size",              limit: 4
+    t.integer  "width",             limit: 4
+    t.integer  "height",            limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "admin_retail_product_options", force: :cascade do |t|
+    t.integer "retail_product_id", limit: 4
+    t.string  "option_prompt",     limit: 255
+    t.string  "option_input_type", limit: 255
+    t.decimal "price",                         precision: 8, scale: 2
+  end
+
+  create_table "admin_retail_products", force: :cascade do |t|
+    t.string   "title",                          limit: 255
+    t.string   "code",                           limit: 255
+    t.text     "description",                    limit: 65535
+    t.decimal  "price",                                        precision: 8,  scale: 2
+    t.string   "author",                         limit: 255
+    t.string   "product_type",                   limit: 255
+    t.boolean  "taxable",                                                               default: true
+    t.integer  "brand_id",                       limit: 4
+    t.string   "catalog_number",                 limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "active",                                                                default: true
+    t.boolean  "popular",                                                               default: true
+    t.text     "meta_description",               limit: 65535
+    t.text     "meta_keywords",                  limit: 65535
+    t.boolean  "on_store_homepage",                                                     default: true
+    t.integer  "homepage_order",                 limit: 4,                              default: 0
+    t.text     "print_notes",                    limit: 65535
+    t.boolean  "limited_run",                                                           default: false
+    t.string   "limited_run_title",              limit: 255
+    t.decimal  "american_apparel_upgrade_price",               precision: 8,  scale: 2, default: 4.0
+    t.boolean  "require_tracking",                                                      default: false
+    t.decimal  "third_party_commission",                       precision: 10, scale: 2, default: 0.0
+    t.integer  "print_method_id",                limit: 4
+    t.string   "redirect_url",                   limit: 255
+  end
+
+  add_index "admin_retail_products", ["active"], name: "index_retail_products_on_active", using: :btree
+  add_index "admin_retail_products", ["popular"], name: "index_retail_products_on_popular", using: :btree
+  add_index "admin_retail_products", ["print_method_id"], name: "index_retail_products_on_print_method_id", using: :btree
+  add_index "admin_retail_products", ["taxable"], name: "index_retail_products_on_taxable", using: :btree
+
+  create_table "admin_retail_products_similar_retail_products", id: false, force: :cascade do |t|
+    t.integer "retail_product_id",         limit: 4
+    t.integer "similar_retail_product_id", limit: 4
+  end
+
+  add_index "admin_retail_products_similar_retail_products", ["retail_product_id"], name: "retail_product_id", using: :btree
+  add_index "admin_retail_products_similar_retail_products", ["similar_retail_product_id"], name: "similar_retail_product_id", using: :btree
+
+  create_table "admin_screens", force: :cascade do |t|
+    t.string  "label",          limit: 255
+    t.integer "job_id",         limit: 4
+    t.string  "description",    limit: 255
+    t.string  "print_location", limit: 255
+    t.string  "film_type",      limit: 255
+    t.string  "frame_type",     limit: 255
+    t.string  "screen_mesh",    limit: 255
+    t.string  "emulsion_type",  limit: 255
+    t.integer "quantity",       limit: 4,   default: 1
+    t.string  "notes",          limit: 255
+  end
+
+  add_index "admin_screens", ["emulsion_type"], name: "index_screens_on_emulsion_type", using: :btree
+  add_index "admin_screens", ["film_type"], name: "index_screens_on_film_type", using: :btree
+  add_index "admin_screens", ["frame_type"], name: "index_screens_on_frame_type", using: :btree
+  add_index "admin_screens", ["job_id"], name: "index_screens_on_job_id", using: :btree
+  add_index "admin_screens", ["label"], name: "index_screens_on_label", using: :btree
+  add_index "admin_screens", ["print_location"], name: "index_screens_on_print_location", using: :btree
+  add_index "admin_screens", ["quantity"], name: "index_screens_on_quantity", using: :btree
+  add_index "admin_screens", ["screen_mesh"], name: "index_screens_on_screen_mesh", using: :btree
+
+  create_table "admin_sessions", force: :cascade do |t|
+    t.string   "session_id", limit: 255,      null: false
+    t.text     "data",       limit: 16777215, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "admin_sessions", ["session_id"], name: "index_sessions_on_session_id", using: :btree
+  add_index "admin_sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "admin_shipments", force: :cascade do |t|
+    t.integer  "order_id",        limit: 4
+    t.string   "shipping_method", limit: 255
+    t.string   "tracking_number", limit: 255
+    t.string   "description",     limit: 255
+    t.decimal  "cost",                        precision: 8, scale: 2
+    t.boolean  "deleted",                                             default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "shipped_by",      limit: 255
+  end
+
+  add_index "admin_shipments", ["cost"], name: "index_shipments_on_cost", using: :btree
+  add_index "admin_shipments", ["deleted"], name: "index_shipments_on_deleted", using: :btree
+  add_index "admin_shipments", ["order_id"], name: "index_shipments_on_order_id", using: :btree
+  add_index "admin_shipments", ["shipping_method"], name: "index_shipments_on_shipping_method", using: :btree
+  add_index "admin_shipments", ["tracking_number"], name: "index_shipments_on_tracking_number", using: :btree
+
+  create_table "admin_sites", force: :cascade do |t|
+    t.string   "domain",       limit: 255
+    t.string   "page_title",   limit: 255
+    t.string   "company_name", limit: 255
+    t.text     "keywords",     limit: 65535
+    t.text     "description",  limit: 65535
+    t.string   "stylesheet",   limit: 255
+    t.string   "phone_number", limit: 255
+    t.string   "location",     limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "admin_stock_items", force: :cascade do |t|
+    t.string   "name",              limit: 255
+    t.integer  "retail_product_id", limit: 4
+    t.string   "size",              limit: 255
+    t.string   "color",             limit: 255
+    t.integer  "stock_level",       limit: 4
+    t.string   "product_type",      limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "lbs",               limit: 4,   default: 0
+    t.integer  "oz",                limit: 4,   default: 0
+    t.integer  "restock_time",      limit: 4,   default: 0
+  end
+
+  add_index "admin_stock_items", ["color"], name: "index_stock_items_on_color", using: :btree
+  add_index "admin_stock_items", ["retail_product_id"], name: "index_stock_items_on_retail_product_id", using: :btree
+  add_index "admin_stock_items", ["size"], name: "index_stock_items_on_size", using: :btree
+  add_index "admin_stock_items", ["stock_level"], name: "index_stock_items_on_stock_level", using: :btree
+
+  create_table "admin_supplier_locations", force: :cascade do |t|
+    t.integer "supplier_id",  limit: 4
+    t.string  "location",     limit: 255
+    t.integer "transit_time", limit: 4
+    t.time    "cutoff_time",              default: '2000-01-01 00:00:00'
+    t.boolean "default",                  default: false
+    t.boolean "mill_direct",              default: false
+  end
+
+  create_table "admin_suppliers", force: :cascade do |t|
+    t.string "name",            limit: 255
+    t.string "supplier_type",   limit: 255
+    t.string "website",         limit: 255
+    t.string "shipment_method", limit: 255
+  end
+
+  create_table "admin_taggings", force: :cascade do |t|
+    t.integer  "tag_id",        limit: 4
+    t.integer  "taggable_id",   limit: 4
+    t.string   "taggable_type", limit: 255
+    t.datetime "created_at"
+  end
+
+  add_index "admin_taggings", ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
+  add_index "admin_taggings", ["taggable_id", "taggable_type"], name: "index_taggings_on_taggable_id_and_taggable_type", using: :btree
+
+  create_table "admin_tags", force: :cascade do |t|
+    t.string "name", limit: 255
+  end
+
+  create_table "admin_users", force: :cascade do |t|
+    t.string   "email",                     limit: 255
+    t.string   "type",                      limit: 255
+    t.boolean  "account_enabled",                       default: false
+    t.string   "first_name",                limit: 255
+    t.string   "last_name",                 limit: 255
+    t.string   "address_1",                 limit: 255
+    t.string   "address_2",                 limit: 255
+    t.string   "city",                      limit: 255
+    t.string   "state",                     limit: 255
+    t.string   "zipcode",                   limit: 255
+    t.string   "country",                   limit: 255
+    t.string   "phone_number",              limit: 255
+    t.string   "crypted_password",          limit: 40
+    t.string   "salt",                      limit: 40
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "remember_token",            limit: 255
+    t.datetime "remember_token_expires_at"
+    t.boolean  "salesperson",                           default: false
+    t.string   "company",                   limit: 255
+    t.string   "address_3",                 limit: 255
+  end
+
+  add_index "admin_users", ["account_enabled"], name: "index_users_on_account_enabled", using: :btree
+  add_index "admin_users", ["city"], name: "index_users_on_city", using: :btree
+  add_index "admin_users", ["email"], name: "index_users_on_email", using: :btree
+  add_index "admin_users", ["first_name"], name: "index_users_on_first_name", using: :btree
+  add_index "admin_users", ["last_name"], name: "index_users_on_last_name", using: :btree
+  add_index "admin_users", ["type"], name: "index_users_on_type", using: :btree
 
   create_table "artwork_proofs", force: :cascade do |t|
     t.integer  "artwork_id", limit: 4
@@ -601,8 +1279,8 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.decimal  "shipping",                                     precision: 10, scale: 2
-    t.datetime "initialized_at"
     t.string   "quote_source",                     limit: 255
+    t.datetime "initialized_at"
     t.string   "freshdesk_ticket_id",              limit: 255
     t.boolean  "informal"
     t.integer  "insightly_category_id",            limit: 4
@@ -854,668 +1532,4 @@ ActiveRecord::Schema.define(version: 1) do
     t.datetime "updated_at"
   end
 
-  create_table "admin_artworks", :force => true do |t|
-    t.integer  "custom_order_id"
-    t.integer  "administrator_id"
-    t.integer  "parent_id"
-    t.string   "content_type"
-    t.string   "filename"
-    t.string   "thumbnail"
-    t.integer  "size"
-    t.integer  "width"
-    t.integer  "height"
-    t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "admin_artworks", ["administrator_id"], :name => "index_artworks_on_administrator_id"
-  add_index "admin_artworks", ["custom_order_id"], :name => "index_artworks_on_custom_order_id"
-
-  create_table "admin_blog_entries", :force => true do |t|
-    t.integer  "author_id"
-    t.string   "title"
-    t.text     "body"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "admin_blog_entries", ["author_id"], :name => "index_blog_entries_on_author_id"
-
-  create_table "admin_brands", :force => true do |t|
-    t.string "name"
-    t.string "sku_code"
-  end
-
-  add_index "admin_brands", ["name"], :name => "index_brands_on_name"
-  add_index "admin_brands", ["sku_code"], :name => "index_brands_on_sku_code"
-
-  create_table "admin_comments", :force => true do |t|
-    t.string   "title",            :limit => 50, :default => ""
-    t.string   "comment",                        :default => ""
-    t.datetime "created_at",                                     :null => false
-    t.integer  "commentable_id",                 :default => 0,  :null => false
-    t.string   "commentable_type", :limit => 15, :default => "", :null => false
-    t.integer  "user_id",                        :default => 0,  :null => false
-  end
-
-  add_index "admin_comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
-  add_index "admin_comments", ["user_id"], :name => "index_comments_on_user_id"
-
-  create_table "admin_inventories", :force => true do |t|
-    t.string  "name"
-    t.integer "brand_id"
-    t.string  "catalog_number"
-    t.string  "color"
-    t.string  "size"
-    t.text    "description"
-    t.text    "image"
-    t.integer "lbs",                :default => 0
-    t.integer "oz",                 :default => 0
-    t.integer "sort_order",         :default => 0
-    t.integer "inventory_size_id"
-    t.integer "inventory_color_id"
-    t.integer "inventory_line_id"
-    t.integer "retail_stock_level", :default => 0
-  end
-
-  add_index "admin_inventories", ["brand_id"], :name => "index_inventories_on_brand_id"
-  add_index "admin_inventories", ["catalog_number"], :name => "index_inventories_on_catalog_number"
-  add_index "admin_inventories", ["color"], :name => "index_inventories_on_color"
-  add_index "admin_inventories", ["inventory_color_id"], :name => "index_inventories_on_inventory_color_id"
-  add_index "admin_inventories", ["inventory_line_id"], :name => "index_inventories_on_inventory_line_id"
-  add_index "admin_inventories", ["inventory_size_id"], :name => "index_inventories_on_inventory_size_id"
-  add_index "admin_inventories", ["name"], :name => "index_inventories_on_name"
-  add_index "admin_inventories", ["size"], :name => "index_inventories_on_size"
-
-  create_table "admin_inventories_retail_products", :force => true do |t|
-    t.integer "retail_product_id",                                                :null => false
-    t.integer "inventory_id",                                                     :null => false
-    t.decimal "upcharge",          :precision => 8, :scale => 2, :default => 0.0
-  end
-
-  add_index "admin_inventories_retail_products", ["inventory_id"], :name => "index_inventories_retail_products_on_inventory_id"
-  add_index "admin_inventories_retail_products", ["retail_product_id"], :name => "index_inventories_retail_products_on_retail_product_id"
-
-  create_table "admin_inventory_colors", :force => true do |t|
-    t.string "color"
-    t.string "sku_code"
-  end
-
-  add_index "admin_inventory_colors", ["sku_code"], :name => "index_inventory_colors_on_sku_code"
-
-  create_table "admin_inventory_lines", :force => true do |t|
-    t.integer "brand_id"
-    t.string  "catalog_number"
-    t.string  "name"
-    t.string  "description"
-    t.string  "sku_code"
-  end
-
-  add_index "admin_inventory_lines", ["brand_id"], :name => "index_inventory_lines_on_brand_id"
-  add_index "admin_inventory_lines", ["sku_code"], :name => "index_inventory_lines_on_sku_code"
-
-  create_table "admin_inventory_order_line_items", :force => true do |t|
-    t.integer "supplier_location_id"
-    t.integer "line_item_id"
-    t.integer "inventory_order_id"
-  end
-
-  create_table "admin_inventory_orders", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "admin_inventory_sizes", :force => true do |t|
-    t.string  "size"
-    t.integer "sort_order"
-    t.string  "sku_code"
-  end
-
-  add_index "admin_inventory_sizes", ["sku_code"], :name => "index_inventory_sizes_on_sku_code"
-
-  create_table "admin_iso_countries", :force => true do |t|
-    t.string "iso2"
-    t.string "iso3"
-    t.string "name"
-  end
-
-  create_table "admin_jobs", :force => true do |t|
-    t.string   "title"
-    t.string   "type"
-    t.integer  "custom_order_id"
-    t.boolean  "rtp_art_approved",                                        :default => false
-    t.boolean  "scheduled",                                               :default => false
-    t.datetime "print_date"
-    t.boolean  "artwork_burned",                                          :default => false
-    t.boolean  "ordered",                                                 :default => false
-    t.boolean  "printed",                                                 :default => false
-    t.boolean  "inventoried",                                             :default => false
-    t.boolean  "sent_to_embroiderer",                                     :default => false
-    t.boolean  "received_from_embroiderer",                               :default => false
-    t.text     "description"
-    t.decimal  "subtotal",                  :precision => 8, :scale => 2
-    t.decimal  "tax",                       :precision => 8, :scale => 2
-    t.decimal  "total",                     :precision => 8, :scale => 2
-    t.decimal  "discounts",                 :precision => 8, :scale => 2
-    t.integer  "pieces"
-    t.boolean  "films_printed",                                           :default => false
-    t.boolean  "art_submitted",                                           :default => false
-    t.string   "inventory_location"
-    t.string   "inventoried_by"
-    t.boolean  "proof_requested",                                         :default => false
-    t.integer  "whos_proofing"
-    t.boolean  "partially_inventoried",                                   :default => false
-    t.boolean  "art_sent_to_embroiderer",                                 :default => false
-    t.boolean  "digital_white_ink",                                       :default => false
-    t.boolean  "digital_file_generated",                                  :default => false
-    t.boolean  "digital_file_requested",                                  :default => false
-  end
-
-  add_index "admin_jobs", ["art_sent_to_embroiderer"], :name => "index_jobs_on_art_sent_to_embroiderer"
-  add_index "admin_jobs", ["artwork_burned"], :name => "index_jobs_on_artwork_burned"
-  add_index "admin_jobs", ["custom_order_id"], :name => "index_jobs_on_custom_order_id"
-  add_index "admin_jobs", ["digital_file_generated"], :name => "index_jobs_on_digital_file_generated"
-  add_index "admin_jobs", ["digital_file_requested"], :name => "index_jobs_on_digital_file_requested"
-  add_index "admin_jobs", ["inventoried"], :name => "index_jobs_on_inventoried"
-  add_index "admin_jobs", ["ordered"], :name => "index_jobs_on_ordered"
-  add_index "admin_jobs", ["print_date"], :name => "index_jobs_on_print_date"
-  add_index "admin_jobs", ["printed"], :name => "index_jobs_on_printed"
-  add_index "admin_jobs", ["received_from_embroiderer"], :name => "index_jobs_on_received_from_embroiderer"
-  add_index "admin_jobs", ["rtp_art_approved"], :name => "index_jobs_on_rtp_art_approved"
-  add_index "admin_jobs", ["scheduled"], :name => "index_jobs_on_scheduled"
-  add_index "admin_jobs", ["sent_to_embroiderer"], :name => "index_jobs_on_sent_to_embroiderer"
-  add_index "admin_jobs", ["type"], :name => "index_jobs_on_type"
-
-  create_table "admin_line_items", :force => true do |t|
-    t.integer  "order_id"
-    t.integer  "inventory_id"
-    t.string   "product"
-    t.text     "description"
-    t.string   "item_options"
-    t.decimal  "unit_price",        :precision => 8, :scale => 2
-    t.integer  "quantity"
-    t.decimal  "total_price",       :precision => 8, :scale => 2
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "retail_product_id"
-    t.boolean  "taxable"
-    t.integer  "job_id"
-    t.integer  "stock_item_id"
-    t.boolean  "ordered",                                         :default => false
-  end
-
-  add_index "admin_line_items", ["inventory_id"], :name => "index_line_items_on_inventory_id"
-  add_index "admin_line_items", ["job_id"], :name => "index_line_items_on_job_id"
-  add_index "admin_line_items", ["order_id"], :name => "index_line_items_on_order_id"
-  add_index "admin_line_items", ["product"], :name => "index_line_items_on_product"
-  add_index "admin_line_items", ["quantity"], :name => "index_line_items_on_quantity"
-  add_index "admin_line_items", ["total_price"], :name => "index_line_items_on_total_price"
-  add_index "admin_line_items", ["unit_price"], :name => "index_line_items_on_unit_price"
-
-  create_table "admin_name_and_numbers", :force => true do |t|
-    t.integer  "order_id"
-    t.integer  "job_id"
-    t.integer  "inventory_id"
-    t.string   "name"
-    t.string   "number"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "admin_orders", :force => true do |t|
-    t.integer  "customer_id"
-    t.string   "delivery_first_name"
-    t.string   "delivery_last_name"
-    t.string   "delivery_address_1"
-    t.string   "delivery_address_2"
-    t.string   "delivery_city"
-    t.string   "delivery_state"
-    t.string   "delivery_zipcode"
-    t.string   "delivery_country"
-    t.integer  "administrator_id"
-    t.string   "number"
-    t.string   "type"
-    t.decimal  "subtotal",                  :precision => 8, :scale => 2
-    t.decimal  "total",                     :precision => 8, :scale => 2
-    t.decimal  "tax",                       :precision => 8, :scale => 2
-    t.decimal  "shipping",                  :precision => 8, :scale => 2
-    t.decimal  "balance",                   :precision => 8, :scale => 2
-    t.string   "status",                                                  :default => "Pending"
-    t.string   "ip"
-    t.text     "customer_comments"
-    t.datetime "ship_date"
-    t.string   "ship_method"
-    t.text     "customer_description"
-    t.text     "approximate_quantity"
-    t.date     "delivery_deadline"
-    t.boolean  "is_shipped",                                              :default => false
-    t.date     "shipped_deadline"
-    t.boolean  "is_ink_in_stock",                                         :default => false
-    t.date     "ink_ordered_deadline"
-    t.boolean  "are_garments_in_stock",                                   :default => false
-    t.date     "garments_ordered_deadline"
-    t.string   "order_source"
-    t.integer  "bid_request_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "is_tax_exempt",                                           :default => false
-    t.string   "tax_id_number"
-    t.boolean  "are_garments_ordered",                                    :default => false
-    t.string   "title",                                                   :default => ""
-    t.boolean  "redo",                                                    :default => false
-    t.string   "whos_fault",                                              :default => ""
-    t.string   "redo_reason",                                             :default => ""
-    t.string   "delivery_phone_number"
-    t.decimal  "discounts",                 :precision => 8, :scale => 2
-    t.boolean  "limited_retail_run",                                      :default => false
-    t.string   "limited_retail_run_title"
-    t.string   "terms"
-    t.string   "po"
-    t.integer  "commission_salesperson_id"
-    t.decimal  "commission_amount",         :precision => 8, :scale => 2, :default => 0.0
-    t.boolean  "scheduled",                                               :default => false
-    t.date     "scheduled_print_date"
-    t.string   "delivery_company"
-    t.string   "delivery_address_3"
-  end
-
-  add_index "admin_orders", ["are_garments_in_stock"], :name => "index_orders_on_are_garments_in_stock"
-  add_index "admin_orders", ["balance"], :name => "index_orders_on_balance"
-  add_index "admin_orders", ["bid_request_id"], :name => "index_orders_on_bid_request_id"
-  add_index "admin_orders", ["customer_id"], :name => "index_orders_on_customer_id"
-  add_index "admin_orders", ["delivery_address_1"], :name => "index_orders_on_delivery_address_1"
-  add_index "admin_orders", ["delivery_address_2"], :name => "index_orders_on_delivery_address_2"
-  add_index "admin_orders", ["delivery_city"], :name => "index_orders_on_delivery_city"
-  add_index "admin_orders", ["delivery_country"], :name => "index_orders_on_delivery_country"
-  add_index "admin_orders", ["delivery_deadline"], :name => "index_orders_on_delivery_deadline"
-  add_index "admin_orders", ["delivery_first_name"], :name => "index_orders_on_delivery_first_name"
-  add_index "admin_orders", ["delivery_last_name"], :name => "index_orders_on_delivery_last_name"
-  add_index "admin_orders", ["delivery_state"], :name => "index_orders_on_delivery_state"
-  add_index "admin_orders", ["delivery_zipcode"], :name => "index_orders_on_delivery_zipcode"
-  add_index "admin_orders", ["garments_ordered_deadline"], :name => "index_orders_on_garments_ordered_deadline"
-  add_index "admin_orders", ["ink_ordered_deadline"], :name => "index_orders_on_ink_ordered_deadline"
-  add_index "admin_orders", ["is_ink_in_stock"], :name => "index_orders_on_is_ink_in_stock"
-  add_index "admin_orders", ["is_shipped"], :name => "index_orders_on_is_shipped"
-  add_index "admin_orders", ["is_tax_exempt"], :name => "index_orders_on_is_tax_exempt"
-  add_index "admin_orders", ["number"], :name => "index_orders_on_number"
-  add_index "admin_orders", ["order_source"], :name => "index_orders_on_order_source"
-  add_index "admin_orders", ["ship_date"], :name => "index_orders_on_ship_date"
-  add_index "admin_orders", ["ship_method"], :name => "index_orders_on_ship_method"
-  add_index "admin_orders", ["shipped_deadline"], :name => "index_orders_on_shipped_deadline"
-  add_index "admin_orders", ["shipping"], :name => "index_orders_on_shipping"
-  add_index "admin_orders", ["status"], :name => "index_orders_on_status"
-  add_index "admin_orders", ["subtotal"], :name => "index_orders_on_subtotal"
-  add_index "admin_orders", ["tax"], :name => "index_orders_on_tax"
-  add_index "admin_orders", ["total"], :name => "index_orders_on_total"
-
-  create_table "admin_payments", :force => true do |t|
-    t.string   "order_id"
-    t.string   "user_id"
-    t.string   "drivers_license_number"
-    t.integer  "check_number"
-    t.string   "credit_card_number"
-    t.string   "credit_card_type"
-    t.date     "credit_card_exp_date"
-    t.string   "deposit_number"
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "address_1"
-    t.string   "address_2"
-    t.string   "city"
-    t.string   "state"
-    t.string   "zipcode"
-    t.string   "country"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "payment_method"
-    t.decimal  "amount",                 :precision => 8, :scale => 2
-    t.string   "email"
-    t.string   "paypal_transaction_id"
-  end
-
-  add_index "admin_payments", ["address_1"], :name => "index_payments_on_address_1"
-  add_index "admin_payments", ["address_2"], :name => "index_payments_on_address_2"
-  add_index "admin_payments", ["check_number"], :name => "index_payments_on_check_number"
-  add_index "admin_payments", ["city"], :name => "index_payments_on_city"
-  add_index "admin_payments", ["country"], :name => "index_payments_on_country"
-  add_index "admin_payments", ["credit_card_type"], :name => "index_payments_on_credit_card_type"
-  add_index "admin_payments", ["deposit_number"], :name => "index_payments_on_deposit_number"
-  add_index "admin_payments", ["drivers_license_number"], :name => "index_payments_on_drivers_license_number"
-  add_index "admin_payments", ["first_name"], :name => "index_payments_on_first_name"
-  add_index "admin_payments", ["last_name"], :name => "index_payments_on_last_name"
-  add_index "admin_payments", ["order_id"], :name => "index_payments_on_order_id"
-  add_index "admin_payments", ["state"], :name => "index_payments_on_state"
-  add_index "admin_payments", ["user_id"], :name => "index_payments_on_user_id"
-  add_index "admin_payments", ["zipcode"], :name => "index_payments_on_zipcode"
-
-  create_table "admin_platens", :force => true do |t|
-    t.string  "size"
-    t.integer "inventory_id"
-    t.integer "print_method_id"
-    t.string  "print_method_text"
-  end
-
-  add_index "admin_platens", ["inventory_id"], :name => "index_platens_on_inventory_id"
-  add_index "admin_platens", ["print_method_id"], :name => "index_platens_on_print_method_id"
-  add_index "admin_platens", ["print_method_text"], :name => "index_platens_on_print_method_text"
-
-  create_table "admin_print_methods", :force => true do |t|
-    t.string "print_method"
-  end
-
-  create_table "admin_proof_images", :force => true do |t|
-    t.integer  "parent_id"
-    t.string   "content_type"
-    t.string   "filename"
-    t.string   "thumbnail"
-    t.integer  "size"
-    t.integer  "width"
-    t.integer  "height"
-    t.integer  "custom_order_id"
-    t.text     "description"
-    t.string   "status",           :default => "Pending"
-    t.string   "initials"
-    t.text     "rejection_reason"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "job_id"
-  end
-
-  add_index "admin_proof_images", ["custom_order_id"], :name => "index_proof_images_on_custom_order_id"
-  add_index "admin_proof_images", ["job_id"], :name => "index_proof_images_on_job_id"
-  add_index "admin_proof_images", ["status"], :name => "index_proof_images_on_status"
-
-  create_table "admin_queued_mails", :force => true do |t|
-    t.text   "object"
-    t.string "mailer"
-  end
-
-  create_table "admin_retail_categories", :force => true do |t|
-    t.integer  "parent_category_id", :default => 0
-    t.string   "title"
-    t.string   "image"
-    t.integer  "administrator_id",   :default => 1
-    t.integer  "parent_id"
-    t.string   "content_type"
-    t.string   "filename"
-    t.string   "thumbnail"
-    t.integer  "size"
-    t.integer  "width"
-    t.integer  "height"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "active",             :default => true
-    t.string   "redirect_url"
-  end
-
-  add_index "admin_retail_categories", ["administrator_id"], :name => "index_retail_categories_on_administrator_id"
-  add_index "admin_retail_categories", ["parent_category_id"], :name => "index_retail_categories_on_parent_category_id"
-
-  create_table "admin_retail_categories_retail_products", :id => false, :force => true do |t|
-    t.integer "retail_product_id",  :null => false
-    t.integer "retail_category_id", :null => false
-  end
-
-  add_index "admin_retail_categories_retail_products", ["retail_category_id"], :name => "index_retail_categories_retail_products_on_retail_category_id"
-  add_index "admin_retail_categories_retail_products", ["retail_product_id"], :name => "index_retail_categories_retail_products_on_retail_product_id"
-
-  create_table "admin_retail_colors", :force => true do |t|
-    t.string "color"
-    t.string "american_apparel_color"
-    t.string "gildan_color"
-    t.string "port_and_co_color"
-    t.string "anvil_color"
-    t.string "hanes_color"
-  end
-
-  create_table "admin_retail_inventories_sales", :force => true do |t|
-    t.string   "added_by"
-    t.integer  "inventory_id"
-    t.integer  "quantity"
-    t.integer  "order_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "admin_retail_inventories_sales", ["inventory_id"], :name => "index_retail_inventories_sales_on_inventory_id"
-
-  create_table "admin_retail_misprints", :force => true do |t|
-    t.boolean  "used",              :default => false
-    t.string   "reason"
-    t.integer  "retail_product_id"
-    t.integer  "inventory_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "admin_retail_misprints", ["inventory_id"], :name => "index_retail_misprints_on_inventory_id"
-  add_index "admin_retail_misprints", ["retail_product_id"], :name => "index_retail_misprints_on_retail_product_id"
-  add_index "admin_retail_misprints", ["used"], :name => "index_retail_misprints_on_used"
-
-  create_table "admin_retail_product_colors", :force => true do |t|
-    t.integer  "retail_product_id"
-    t.integer  "retail_color_id"
-    t.string   "image_type"
-    t.integer  "parent_id"
-    t.string   "content_type"
-    t.string   "filename"
-    t.string   "thumbnail"
-    t.integer  "size"
-    t.integer  "width"
-    t.integer  "height"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "print_method_id"
-    t.string   "product_code"
-  end
-
-  add_index "admin_retail_product_colors", ["print_method_id"], :name => "index_retail_product_colors_on_print_method_id"
-  add_index "admin_retail_product_colors", ["retail_color_id"], :name => "index_retail_product_colors_on_retail_color_id"
-  add_index "admin_retail_product_colors", ["retail_product_id"], :name => "index_retail_product_colors_on_retail_product_id"
-
-  create_table "admin_retail_product_images", :force => true do |t|
-    t.integer  "retail_product_id"
-    t.string   "image_type"
-    t.integer  "parent_id"
-    t.string   "content_type"
-    t.string   "filename"
-    t.string   "thumbnail"
-    t.integer  "size"
-    t.integer  "width"
-    t.integer  "height"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "admin_retail_product_options", :force => true do |t|
-    t.integer "retail_product_id"
-    t.string  "option_prompt"
-    t.string  "option_input_type"
-    t.decimal "price",             :precision => 8, :scale => 2
-  end
-
-  create_table "admin_retail_products", :force => true do |t|
-    t.string   "title"
-    t.string   "code"
-    t.text     "description"
-    t.decimal  "price",                          :precision => 8,  :scale => 2
-    t.string   "author"
-    t.string   "product_type"
-    t.boolean  "taxable",                                                       :default => true
-    t.integer  "brand_id"
-    t.string   "catalog_number"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "active",                                                        :default => true
-    t.boolean  "popular",                                                       :default => true
-    t.text     "meta_description"
-    t.text     "meta_keywords"
-    t.boolean  "on_store_homepage",                                             :default => true
-    t.integer  "homepage_order",                                                :default => 0
-    t.text     "print_notes"
-    t.boolean  "limited_run",                                                   :default => false
-    t.string   "limited_run_title"
-    t.decimal  "american_apparel_upgrade_price", :precision => 8,  :scale => 2, :default => 4.0
-    t.boolean  "require_tracking",                                              :default => false
-    t.decimal  "third_party_commission",         :precision => 10, :scale => 2, :default => 0.0
-    t.integer  "print_method_id"
-    t.string   "redirect_url"
-  end
-
-  add_index "admin_retail_products", ["active"], :name => "index_retail_products_on_active"
-  add_index "admin_retail_products", ["popular"], :name => "index_retail_products_on_popular"
-  add_index "admin_retail_products", ["print_method_id"], :name => "index_retail_products_on_print_method_id"
-  add_index "admin_retail_products", ["taxable"], :name => "index_retail_products_on_taxable"
-
-  create_table "admin_retail_products_similar_retail_products", :id => false, :force => true do |t|
-    t.integer "retail_product_id"
-    t.integer "similar_retail_product_id"
-  end
-
-  add_index "admin_retail_products_similar_retail_products", ["retail_product_id"], :name => "retail_product_id"
-  add_index "admin_retail_products_similar_retail_products", ["similar_retail_product_id"], :name => "similar_retail_product_id"
-
-  create_table "admin_screens", :force => true do |t|
-    t.string  "label"
-    t.integer "job_id"
-    t.string  "description"
-    t.string  "print_location"
-    t.string  "film_type"
-    t.string  "frame_type"
-    t.string  "screen_mesh"
-    t.string  "emulsion_type"
-    t.integer "quantity",       :default => 1
-    t.string  "notes"
-  end
-
-  add_index "admin_screens", ["emulsion_type"], :name => "index_screens_on_emulsion_type"
-  add_index "admin_screens", ["film_type"], :name => "index_screens_on_film_type"
-  add_index "admin_screens", ["frame_type"], :name => "index_screens_on_frame_type"
-  add_index "admin_screens", ["job_id"], :name => "index_screens_on_job_id"
-  add_index "admin_screens", ["label"], :name => "index_screens_on_label"
-  add_index "admin_screens", ["print_location"], :name => "index_screens_on_print_location"
-  add_index "admin_screens", ["quantity"], :name => "index_screens_on_quantity"
-  add_index "admin_screens", ["screen_mesh"], :name => "index_screens_on_screen_mesh"
-
-  create_table "admin_sessions", :force => true do |t|
-    t.string   "session_id",                     :null => false
-    t.text     "data",       :limit => 16777215, :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "admin_sessions", ["session_id"], :name => "index_sessions_on_session_id"
-  add_index "admin_sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
-
-  create_table "admin_shipments", :force => true do |t|
-    t.integer  "order_id"
-    t.string   "shipping_method"
-    t.string   "tracking_number"
-    t.string   "description"
-    t.decimal  "cost",            :precision => 8, :scale => 2
-    t.boolean  "deleted",                                       :default => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "shipped_by"
-  end
-
-  add_index "admin_shipments", ["cost"], :name => "index_shipments_on_cost"
-  add_index "admin_shipments", ["deleted"], :name => "index_shipments_on_deleted"
-  add_index "admin_shipments", ["order_id"], :name => "index_shipments_on_order_id"
-  add_index "admin_shipments", ["shipping_method"], :name => "index_shipments_on_shipping_method"
-  add_index "admin_shipments", ["tracking_number"], :name => "index_shipments_on_tracking_number"
-
-  create_table "admin_sites", :force => true do |t|
-    t.string   "domain"
-    t.string   "page_title"
-    t.string   "company_name"
-    t.text     "keywords"
-    t.text     "description"
-    t.string   "stylesheet"
-    t.string   "phone_number"
-    t.string   "location"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "admin_stock_items", :force => true do |t|
-    t.string   "name"
-    t.integer  "retail_product_id"
-    t.string   "size"
-    t.string   "color"
-    t.integer  "stock_level"
-    t.string   "product_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "lbs",               :default => 0
-    t.integer  "oz",                :default => 0
-    t.integer  "restock_time",      :default => 0
-  end
-
-  add_index "admin_stock_items", ["color"], :name => "index_stock_items_on_color"
-  add_index "admin_stock_items", ["retail_product_id"], :name => "index_stock_items_on_retail_product_id"
-  add_index "admin_stock_items", ["size"], :name => "index_stock_items_on_size"
-  add_index "admin_stock_items", ["stock_level"], :name => "index_stock_items_on_stock_level"
-
-  create_table "admin_supplier_locations", :force => true do |t|
-    t.integer "supplier_id"
-    t.string  "location"
-    t.integer "transit_time"
-    t.time    "cutoff_time",  :default => '2000-01-01 00:00:00'
-    t.boolean "default",      :default => false
-    t.boolean "mill_direct",  :default => false
-  end
-
-  create_table "admin_suppliers", :force => true do |t|
-    t.string "name"
-    t.string "supplier_type"
-    t.string "website"
-    t.string "shipment_method"
-  end
-
-  create_table "admin_taggings", :force => true do |t|
-    t.integer  "tag_id"
-    t.integer  "taggable_id"
-    t.string   "taggable_type"
-    t.datetime "created_at"
-  end
-
-  add_index "admin_taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
-  add_index "admin_taggings", ["taggable_id", "taggable_type"], :name => "index_taggings_on_taggable_id_and_taggable_type"
-
-  create_table "admin_tags", :force => true do |t|
-    t.string "name"
-  end
-
-  create_table "admin_users", :force => true do |t|
-    t.string   "email"
-    t.string   "type"
-    t.boolean  "account_enabled",                         :default => false
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "address_1"
-    t.string   "address_2"
-    t.string   "city"
-    t.string   "state"
-    t.string   "zipcode"
-    t.string   "country"
-    t.string   "phone_number"
-    t.string   "crypted_password",          :limit => 40
-    t.string   "salt",                      :limit => 40
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "remember_token"
-    t.datetime "remember_token_expires_at"
-    t.boolean  "salesperson",                             :default => false
-    t.string   "company"
-    t.string   "address_3"
-  end
-
-  add_index "admin_users", ["account_enabled"], :name => "index_users_on_account_enabled"
-  add_index "admin_users", ["city"], :name => "index_users_on_city"
-  add_index "admin_users", ["email"], :name => "index_users_on_email"
-  add_index "admin_users", ["first_name"], :name => "index_users_on_first_name"
-  add_index "admin_users", ["last_name"], :name => "index_users_on_last_name"
-  add_index "admin_users", ["type"], :name => "index_users_on_type"
 end
