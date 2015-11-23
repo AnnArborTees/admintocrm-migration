@@ -34,10 +34,7 @@ describe Order, type: :model do
     end
 
     context "admin_order terms are 'invoice'" do
-      
-      before{
-        allow(admin_terms).to receive(:terms) {"invoice"}
-      }
+      before{ allow(admin_terms).to receive(:terms) {"invoice"} }
 
       it "sets order terms as 'Net 30'" do
         terms = Order::get_terms_from_admin_order(admin_order)

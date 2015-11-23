@@ -27,7 +27,6 @@ describe Shipment, type: :model do
       it 'initializes a shipment with shipping_method, company, name, address_1, address_2, address_3,  
         city, state, and zipcode' do
         expect(new_ship.class).to eq(Shipment)
-        byebug
         expect(new_ship.name).to eq("#{admin_order.customer.first_name} #{admin_order.customer.last_name}")
         expect(new_ship.address_1).to eq(admin_order.delivery_address_1)
         expect(new_ship.address_2).to eq(admin_order.delivery_address_2)
