@@ -93,10 +93,7 @@ describe Order, type: :model do
 
     context "admin_order ship_method is 'Pick Up'" do
       
-      before{
-        allow(admin_ship_method).to receive(:ship_method) {"Pick Up"}
-      }
-
+      before{ allow(admin_ship_method).to receive(:ship_method) {"Pick Up"} }
       it "sets order delivery_method to 'Pick up in Ann Arbor" do
         ship = Order::get_ship_method_from_admin_order(admin_order)
         expect(ship).to eq("Pick up in Ann Arbor")
@@ -105,10 +102,7 @@ describe Order, type: :model do
 
     context "admin_order ship_method is anything else" do
       
-      before{
-        allow(admin_ship_method).to receive(:ship_method) {"AATC Delivery"}
-      }
-
+      before{ allow(admin_ship_method).to receive(:ship_method) {"AATC Delivery"} }
       it "sets order delivery_method to 'Ship to one location'" do
         ship = Order::get_ship_method_from_admin_order(admin_order)
         expect(ship).to eq("Ship to one location")
@@ -120,11 +114,9 @@ describe Order, type: :model do
     context "given an admin_order with a customer and an admin" do
         
       let(:admin_order) { create(:admin_order) } 
-
       context 'and an order with that id does not exist' do 
         it 'creates and returns a valid order and finds or creates the salesperson' do 
           o = Order::create_from_admin_order(admin_order)
-          
           expect(o.valid?).to be_truthy
           expect(o.persisted?).to be_truthy
           expect(o.class).to eq(Order)
@@ -146,7 +138,6 @@ describe Order, type: :model do
 
         let(:admin_order) { create(:admin_order, title: 'some other junk') }
         let(:order) { create(:order, id: admin_order.id) }
-               
         it 'updates order and finds or creates the salesperson' do
           o = Order::create_from_admin_order(admin_order)
           expect(o.name).to eq(admin_order.title)
@@ -160,11 +151,9 @@ describe Order, type: :model do
       
     let(:admin_order) { create(:admin_order) }
     let(:order) { create(:order) }
-
     context "admin_order's ship_method is not a 'Pick Up'" do
         
       before{ allow(admin_order).to receive(:ship_method) {"USPS"} }
-
       it 'initializes and inserts into shipments a shipment from admin_order information' do
         order.create_shipment_from_admin_order(admin_order)
         expect(order.shipments).to_not be_empty
@@ -181,9 +170,9 @@ describe Order, type: :model do
   end
   
   describe "#create_job_from_admin_job(admin_job)" do
+
     let(:admin_job) { create(:admin_job) }
     let(:order) { create(:order) }
-
     context "admin_job's title is valid" do
       it 'initializes and inserts into jobs a job with admin_job title' do
         order.create_job_from_admin_job(admin_job)
@@ -193,8 +182,8 @@ describe Order, type: :model do
     end
 
     context "admin_job has an invalid title" do
-      before { allow(admin_job).to receive(:title) {nil} }
 
+      before { allow(admin_job).to receive(:title) {nil} }
       it 'does not initialize or insert a job into jobs from admin_job title' do
         order.create_job_from_admin_job(admin_job)
         expect(order.jobs).to be_empty

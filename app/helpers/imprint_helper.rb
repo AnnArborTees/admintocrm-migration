@@ -91,21 +91,25 @@ module ImprintHelper
     end
   end
 
-  def determine_color_location(key, val, imprint_methods)
+  def determine_color_location(key, imprint_methods)
     name = self.name.downcase
-    num_keyB = name.scan(key+'b').size
-    num_keyS = name.scan(key+'s').size
-    num_keyF = name.scan(key+'f').size
-    num_keyRS = name.scan(key+'rs').size
-    num_keyLS = name.scan(key+'ls').size
-    num_key = name.scan(key).size#straight #c or straight #s
+    desc = self.description.downcase
+    num_keyB = name.scan(key+'b').size + desc.scan(key+'b').size
+    num_keyS = name.scan(key+'s').size + desc.scan(key+'s').size
+    num_keyF = name.scan(key+'f').size + desc.scan(key+'f').size
+    num_keyRS = name.scan(key+'rs').size + desc.scan(key+'rs').size
+    num_keyLS = name.scan(key+'ls').size + desc.scan(key+'ls').size
+    num_key = name.scan(key).size + desc.scan(key).size#straight #c or straight #s
 
     num_total_keys = num_keyB + num_keyS + num_keyRS + num_keyLS + num_keyF
     
-    if(num_total_keys > num_key) && num_keyF_found == 0
-      imprint_methods << val
-    elsif (num_key > num_total_keys)
-      imprint_methods << val
+    #special case
+    if name.include?("1cside") || desc.include?("1cside")
+      return
+    end
+
+    if(((num_total_keys > num_key) && num_keyF == 0) || (num_key > num_total_keys))
+      imprint_methods << IMPRINT_MAP[key] 
     else
       return
     end

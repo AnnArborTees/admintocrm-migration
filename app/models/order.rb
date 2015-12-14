@@ -1,6 +1,6 @@
 class Order < ActiveRecord::Base
   has_many :shipments, as: :shippable
-  has_many :line_items, through: :jobs, foreign_key: :line_itemable_id
+  has_many :line_items, through: :jobs, as: :line_itemable, foreign_key: :line_itemable_id
   has_many :jobs, foreign_key: :jobbable_id
   belongs_to :store, foreign_key: :store_id
   belongs_to :salesperson, class_name: "User", foreign_key: :salesperson_id
@@ -178,12 +178,3 @@ order delivery_methods
     jobs << job unless job.nil?
   end
 end
-
-
-
-
-
-
-
-
-

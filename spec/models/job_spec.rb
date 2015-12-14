@@ -57,7 +57,7 @@ describe Job, type: :model do
     let(:job) { Job::new_job_from_admin_job(admin_job) }
     let(:imprint_methods) { imprint_methods = [] }
     
-    context 'job class can use helper methods' do
+    context 'job class can use imprint helper methods' do
 
       it 'has access to imprint_helper method determine_DTG_variant' do
         job.description = "shirt that is dtg on front"        

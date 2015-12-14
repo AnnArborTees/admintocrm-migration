@@ -1,6 +1,6 @@
 class Job < ActiveRecord::Base
   belongs_to :order, foreign_key: :jobbable_id
-  has_many :line_items, foreign_key: :line_itemable_id
+  has_many :line_items, as: :line_itemable, foreign_key: :line_itemable_id
   has_many :imprints, foreign_key: :job_id
 
   validates :order, presence: true
@@ -19,6 +19,19 @@ class Job < ActiveRecord::Base
       description: admin_job.description,
     )
   end
+
+  def self.find_or_create_from_admin_job(order, admin_job)
+    if admin_job.title.blank?
+      return nil
+    else
+      return self.find_or_initialize_by(
+        name: admin_job.title,
+        description: admin_job.description,
+        jobbable_id: order.id,
+        jobbable_type: "Order"
+      )
+    end
+  end
   
   def determine_imprint_methods
     imprint_methods = []
@@ -26,7 +39,7 @@ class Job < ActiveRecord::Base
       if self.name.downcase.include?(key) || self.description.downcase.include?(key)         
         #key is #c/#s and will prevent overlap between front/back/sleeve
         if key.last == 'c' || key.last == 's'
-          self.determine_color_location(key, val, imprint_methods)
+          self.determine_color_location(key, imprint_methods)
           next
         end
         
@@ -50,4 +63,5 @@ class Job < ActiveRecord::Base
     end
     return imprint_methods.uniq
   end
+
 end

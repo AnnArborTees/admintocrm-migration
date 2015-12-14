@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Admin::Job, type: :model do
   context 'Associations' do
     it { is_expected.to belong_to(:order).with_foreign_key(:custom_order_id) }
+    it { is_expected.to have_many(:proofs).with_foreign_key(:job_id) }
   end
 
   context 'Validations' do

@@ -11,4 +11,9 @@ class Brand < ActiveRecord::Base
     self.name << 'ay'
     self.name = self.name.capitalize
   end 
+
+  def get_unique_brand
+    brand = Admin::Brand.find_by(name: self.name)
+    return brand
+  end
 end

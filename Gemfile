@@ -45,6 +45,7 @@ group :development, :test do
   gem 'email_spec'
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
+  gem 'google_drive', '~> 1.0.4'
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
 

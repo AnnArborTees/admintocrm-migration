@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151001214414) do
+ActiveRecord::Schema.define(version: 1) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "trackable_id",   limit: 4
@@ -239,7 +239,7 @@ ActiveRecord::Schema.define(version: 20151001214414) do
     t.datetime "updated_at"
   end
 
-  create_table "admin_orders", force: :casecade do |t|
+  create_table "admin_orders", force: :cascade do |t|
     t.integer  "customer_id",               limit: 4
     t.string   "delivery_first_name",       limit: 255
     t.string   "delivery_last_name",        limit: 255
@@ -1279,8 +1279,8 @@ ActiveRecord::Schema.define(version: 20151001214414) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.decimal  "shipping",                                     precision: 10, scale: 2
-    t.string   "quote_source",                     limit: 255
     t.datetime "initialized_at"
+    t.string   "quote_source",                     limit: 255
     t.string   "freshdesk_ticket_id",              limit: 255
     t.boolean  "informal"
     t.integer  "insightly_category_id",            limit: 4
