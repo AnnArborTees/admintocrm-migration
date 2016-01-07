@@ -5,9 +5,56 @@ namespace :order do
   task create_crm_orders: :environment do
     Admin::Order.limit(10).each do |admin_order|
       #byebug
+      
       order = Order.create_from_admin_order(admin_order)
       order.create_shipment_from_admin_order(admin_order)
+      
+      admin_order.jobs.each do |aj|
+        job = order.create_job_from_admin_job(aj)
+        admin_order.line_items.each do |li|
+          line = order.create_line_item_from_admin_line_and_job(li, job)
+        end
+      end
     end
+  end
+
+  task create_line_items: :environment do
+    lines = []
+    start_time = Time.now
+    Admin::Order.where(type: "CustomOrder").limit(1000).each do |ao|
+      email = ao.admin.email
+
+      next if email.include?"ricky@annarbortshirtcompany.com" || email.include?("chantal@annarbortshirtcompany.com")
+      order = Order::create_from_admin_order(ao)
+
+      ao.jobs.each do |aj|
+        job = Job::find_or_create_from_admin_job(ao, aj)
+
+        aj.line_items.each do |li|
+           line = LineItem::create_from_admin_line_and_job(li, job) 
+           lines << line
+        end
+      end
+
+      if ao.line_items.where(job_id: nil).count > 0
+        job = Job.find_or_create_by(
+          jobbable_id: order.id, 
+          jobbale_type: 'Order',
+          name: 'No Job Provided',
+          description: 'These line items have no job in the old software'
+        )
+        
+        ao.line_items.where(job_id: nil).each do |li|
+           line = LineItem::create_from_admin_line_and_job(li, job) 
+           lines << line
+        end 
+      end
+
+    end
+
+    end_time = Time.now
+    final_time = (end_time - start_time) / 60 
+    byebug  
   end
 
   task :imprint_method_finder_test, [:year] => :environment do |y, args|
@@ -48,80 +95,5 @@ namespace :order do
     successes.close
     puts "Success: #{success}, Failure: #{failure} Success Rate: #{ success_percent.round(2) }%"
     puts "\nTotal jobs: #{total}"
-  end
-
-  task test_imprintables: :environment do
-    imprintables = []
-    Admin::Inventory.where("id > 0").each do |ai|
-      imprint = Imprintable::find_by_admin_inventory_id(ai.id)
-      imprintables << imprint unless imprint.nil? 
-    end 
-  end
-
-  task test_imprintable_variants: :environment do
-    impvars = []
-    
-    Admin::Inventory.where("id > 0 && id < 100000").each do |ai|
-      impvar = ImprintableVariant::find_by_admin_inventory_id(ai.id)
-      impvars << impvar unless impvar.nil?
-    end
-  end
-
-  task test_imprintable_id_finder: :environment do
-    impvars = []
-    Admin::LineItem.where("id > 0 && id < 10000").each do |al|
-      al.set_imprintable
-      var_id = al.determine_imprintable_id
-      impvars << al.inventory_id unless var_id.nil?
-    end
-  end
-
-  task test_size_finder: :environment do
-    size_name = []
-    size_display = []
-    size_nil = []
-
-    Admin::Inventory.where("id > 0 && id < 100000").each do |ai|
-      s_name = Size::find_by(name: "#{ai.get_size}")
-      s_display = Size::find_by(display_value: "#{ai.get_size}")
-
-      if s_name.nil?
-        if s_display.nil?
-          size_nil << "#{ai.size.id} - #{ai.get_size}"
-        else
-          size_display << "#{s_display.id} - #{s_display.name}"
-        end
-      else
-        size_name << "#{s_name.id} - #{s_name.name}"
-      end
-    end
-  end
-
-  task test_line_item_imprintable_finder: :environment do
-    line_items = []
-    Admin::LineItem.all.each do |al|
-      
-      next if LineItem.find_by(id: al.id)
-
-      line_item = LineItem.create_from_admin_line_item(al)
-      
-      line_items << line_item unless line_item.nil? 
-    end
-    byebug
-  end
-
-  task test_imprintable_type_finder: :environment do
-    imptypes = []
-    inventory_ids = []
-    Admin::LineItem.where("id > 0 && id < 10000").each do |al|
-      al.set_imprintable
-      type = al.determine_imprintable_type
-
-      next if type.nil?
-
-      imptypes << type
-      inventory_ids << al.inventory_id
-    end
-    byebug
   end
 end

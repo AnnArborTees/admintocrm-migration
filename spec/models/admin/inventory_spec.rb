@@ -5,14 +5,13 @@ describe Admin::Inventory, type: :model do
     it { is_expected.to belong_to(:size).with_foreign_key(:inventory_size_id) }
     it { is_expected.to belong_to(:line).with_foreign_key(:inventory_line_id) }
     it { is_expected.to belong_to(:color).with_foreign_key(:inventory_color_id) }
-    it { is_expected.to belong_to(:brand).with_foreign_key(:brand_id) }
+    it { is_expected.to have_one(:brand).through(:line) }
   end
 
   context 'Validations' do
     it { is_expected.to validate_presence_of(:size) }
     it { is_expected.to validate_presence_of(:color) }
     it { is_expected.to validate_presence_of(:line) }
-    it { is_expected.to validate_presence_of(:brand) }
   end
 
   let(:inventory) { create(:admin_inventory) }

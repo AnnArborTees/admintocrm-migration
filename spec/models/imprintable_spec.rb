@@ -29,29 +29,40 @@ describe Imprintable, type: :model do
       end
     end
   end
-
+  
+  describe '::find_or_create_from_inventory_line(admin_inventory)' do
+    let!(:admin_inventory) { create(:admin_inventory) }
+    let!(:imprintable2) { create(:imprintable) }
+    context 'given an inventory line with brand.id 3 and catalog_number "2001"' do
+      it 'should return imprintable with matching data' do
+        imprintable = Imprintable::find_by_admin_inventory(admin_inventory)
+        expect(imprintable).to_not be_nil
+        expect(imprintable.class).to eq(Imprintable)
+        expect(imprintable.brand_name).to eq(admin_inventory.line.brand.name)
+        expect(imprintable.style_catalog_no).to eq(admin_inventory.line.catalog_number)
+      end
+    end
+  end
   #can't get to work yet. working now I think...12/9/2015
   describe '::find_by_admin_inventory_id(id)' do
-    let(:inventory) { create(:admin_inventory) }
-
+    let!(:inventory) { create(:admin_inventory) }
     context "given an admin_inventory with data that matches an imprintable" do
-      let!(:imprintable) { create(:imprintable,
+      let!(:imprintable2) { create(:imprintable,
                                style_name: "Unisex Fine Jersey Long Sleeve Tee", style_catalog_no: "2001") }
       
       it "should return imprintable with data [brand_name: 'Gildan', style_catalog_no: '2001']" do
-        # imprintable
-        imp = Imprintable::find_by_admin_inventory_id(inventory.id)
-        expect(imp).to_not be_nil
-        expect(imp.style_name).to eq(inventory.name)
-        expect(imp.style_catalog_no).to eq(inventory.catalog_no)
+        imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
+        expect(imprintable).to_not be_nil
+        expect(imprintable.style_name).to eq(inventory.name)
+        expect(imprintable.style_catalog_no).to eq(inventory.catalog_no)
       end
     end
+
     context "given an admin_inventory with data that doesn't match an imprintable" do
-      let(:imprint) { create(:imprintable, style_catalog_no: "FB2001") }
+      let!(:imprint) { create(:imprintable, style_catalog_no: "FB2001") }
       it "should return nil" do
-        imprint
-        imp = Imprintable::find_by_admin_inventory_id(inventory.id)
-        expect(imp).to be_nil
+        imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
+        expect(imprintable).to be_nil
       end
     end
   end

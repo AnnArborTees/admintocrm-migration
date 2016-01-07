@@ -2,7 +2,9 @@ class Order < ActiveRecord::Base
   has_many :shipments, as: :shippable
   has_many :line_items, through: :jobs, foreign_key: :line_itemable_id
   has_many :jobs, foreign_key: :jobbable_id
+  has_many :payments, foreign_key: :order_id
   belongs_to :store, foreign_key: :store_id
+  #belongs_to :payment, foreign_key: :order_id
   belongs_to :salesperson, class_name: "User", foreign_key: :salesperson_id
 
   validates :email, presence: true

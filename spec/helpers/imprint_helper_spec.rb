@@ -1,22 +1,13 @@
 require 'rails_helper'
 
-# Specs in this file have access to a helper object that includes
-# the ImprintHelper. For example:
-#
-# describe ImprintHelper do
-#   describe "string concat" do
-#     it "concats two strings with spaces" do
-#       expect(helper.concat_strings("this","that")).to eq("this that")
-#     end
-#   end
-# end
 describe ImprintHelper, type: :helper do
   
   describe '#determine_color_location(key, imprint_methods)' do
     let (:admin_job) { create(:admin_job, title: "Shirt with 1cb, 1cs, 1c, 2c" ) }
+    let!(:order) { create(:order) }
     context 'given a .yml with imprint_phrases and a job title with "Shirt with 1cb, 1cs, 1c, 2c"' do
       it 'should return imprint_methods ["Screen Print,1-C,Back", "Screen Print,1-C,Sleeve", "Screen Print,1-C,Front", "Screen Print,2-C,Front"]' do
-        job = Job.new_job_from_admin_job(admin_job)
+        job = Job::find_or_create_from_admin_job(order, admin_job)
         keys = ["1cb", "1cs", "1c", "2c"]
         imprint_methods = []
       
@@ -39,10 +30,11 @@ describe ImprintHelper, type: :helper do
   describe '#determine_DTG_variant(key, imprint_methods)' do
 
     let (:admin_job) { create(:admin_job, title: "Shirt with DTG-381W") }
+    let!(:order) { create(:order) }
 
     context 'given a .yml with imprint_phrases and a job title with "DTG-381W"' do
       it 'should return imprint_method ["Direct To Garment,Front (White Base)"]' do
-        job = Job.new_job_from_admin_job(admin_job)
+        job = Job::find_or_create_from_admin_job(order, admin_job)
         keys = ["dtg", "381"]
         imprint_methods = []
 
@@ -58,7 +50,7 @@ describe ImprintHelper, type: :helper do
       before{ allow(admin_job).to receive(:title) {"DTG 782 front and back"} }
 
       it 'should return imprint_method ["Direct To Garment,Front,Back (White Base)"]' do
-        job = Job.new_job_from_admin_job(admin_job)
+        job = Job::find_or_create_from_admin_job(order, admin_job)
 
         keys = ["dtg", "782"]
         imprint_methods = []
@@ -74,10 +66,11 @@ describe ImprintHelper, type: :helper do
   
   describe '#determine_digital_type(key, imprint_methods)' do
     let(:admin_job) { create(:admin_job, title: "Shirt digital front and back") }
+    let!(:order) { create(:order) }
 
     context 'given a .yml file with imprint_phrases and a job title including "digital front and back' do
       it 'should return imprint_method "[Direct To Garment,Front,Back"]' do
-        job = Job.new_job_from_admin_job(admin_job)
+        job = Job::find_or_create_from_admin_job(order, admin_job)
         imprint_methods = []
         key = "digital"
 
@@ -93,7 +86,7 @@ describe ImprintHelper, type: :helper do
       
       it 'should return imprint_method ["Direct To Garment,Back"]' do
         
-        job = Job.new_job_from_admin_job(admin_job)
+        job = Job::find_or_create_from_admin_job(order, admin_job)
         imprint_methods = []
         key = "digital"
 
@@ -104,5 +97,4 @@ describe ImprintHelper, type: :helper do
       end
     end
   end
-
 end

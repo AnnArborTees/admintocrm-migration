@@ -1,6 +1,5 @@
 FactoryGirl.define do
  factory :admin_order, :class => 'Admin::Order' do 
-    id 2
     title 'Old Crappy Admin Order'    
     type "customOrder"
     ship_method "Pick Up (Ypsilanti)"

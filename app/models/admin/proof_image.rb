@@ -1,5 +1,6 @@
 class Admin::ProofImage < ActiveRecord::Base
   belongs_to :job, class_name: "Admin::Job", foreign_key: :job_id
+  #belongs_to :order, class_name: "Admin::Order", foreign_key: :order_id
 
   validates :filename, presence: true
   validates :job_id, presence: true

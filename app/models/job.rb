@@ -14,23 +14,29 @@ class Job < ActiveRecord::Base
       return nil
     end
 
-    self.find_or_initialize_by( 
+    job = self.find_or_initialize_by( 
+      #id: admin_job.id
       name: admin_job.title,
       description: admin_job.description,
     )
+
+    job.jobbable_id = admin_job.custom_order_id
+    jobbable_type = admin_job.type 
+    return job
   end
 
-  def self.find_or_create_from_admin_job(order, admin_job)
-    if admin_job.title.blank?
+  def self.find_or_create_from_admin_job(order, aj)
+    if aj.nil? || aj.title.blank?
       return nil
-    else
-      return self.find_or_initialize_by(
-        name: admin_job.title,
-        description: admin_job.description,
-        jobbable_id: order.id,
-        jobbable_type: "Order"
-      )
     end
+    
+    job = self.find_or_initialize_by(
+      name: aj.title,
+      description: aj.description
+    )
+    job.jobbable_id = order.id
+    job.jobbable_type = "Order" 
+    return job
   end
   
   def determine_imprint_methods
