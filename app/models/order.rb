@@ -179,9 +179,9 @@ order delivery_methods
     return job
   end
 
- #def create_line_item_from_admin_line_item(admin_line)
- #  line_item = LineItem::create_from_admin_line_and_order(admin_line, self)
- #  line_items << line_item unless line_item.nil?
- #  return line_item
- #end
+  def create_line_item_from_admin_line_item(admin_line, job)
+    line_item = LineItem::create_from_admin_line_and_job(admin_line, job)
+    line_items << line_item unless line_item.nil?
+    return line_item
+  end
 end

@@ -15,7 +15,7 @@ describe Admin::ProofImage, type: :model do
     context 'given a proof_image with filename "test.jpg" and job_id 1000' do
       it "should produce file_path 'http://s3.amazonaws.com/admin.annarbortshirtcompany.com/proof_images/1000/test.jpg'" do
         expect(proofs.filename).to eq("test.jpg")
-        expect(proofs.file_path).to eq("http://s3.amazonaws.com/admin.annarbortshirtcompany.com/proof_images/1000/test.jpg")
+        expect(proofs.file_path).to eq("http://s3.amazonaws.com/admin.annarbortshirtcompany.com/proof_images/#{proofs.id}/test.jpg")
       end
     end
   end

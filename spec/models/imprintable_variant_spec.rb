@@ -32,6 +32,7 @@ describe ImprintableVariant, type: :model do
     end
     
     context "given an admin_inventory without matching data to imprintable_variant" do
+      
       let!(:admin_inventory_size) { create(:admin_inventory_size, size: "XXXL")}
       let!(:inventory) { create(:admin_inventory, size: admin_inventory_size) }
 

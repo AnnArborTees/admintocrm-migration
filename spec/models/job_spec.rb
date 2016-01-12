@@ -41,6 +41,7 @@ describe Job, type: :model do
   end
 
   describe '#determine_imprint_methods(admin_job)' do
+    
     let(:admin_job) { create(:admin_job, title: "Quarter Zip Black Applique 1c ") }
     let!(:order) { create(:order) }
 
@@ -57,6 +58,7 @@ describe Job, type: :model do
   end
 
   describe 'imprint_helper_extension' do
+    
     let(:admin_job) { create(:admin_job) }
     let!(:order) { create(:order) }
     let(:job) { Job::find_or_create_from_admin_job(order, admin_job) }

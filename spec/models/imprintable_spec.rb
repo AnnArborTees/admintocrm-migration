@@ -31,8 +31,10 @@ describe Imprintable, type: :model do
   end
   
   describe '::find_or_create_from_inventory_line(admin_inventory)' do
+    
     let!(:admin_inventory) { create(:admin_inventory) }
     let!(:imprintable2) { create(:imprintable) }
+    
     context 'given an inventory line with brand.id 3 and catalog_number "2001"' do
       it 'should return imprintable with matching data' do
         imprintable = Imprintable::find_by_admin_inventory(admin_inventory)
@@ -43,10 +45,13 @@ describe Imprintable, type: :model do
       end
     end
   end
-  #can't get to work yet. working now I think...12/9/2015
+ 
   describe '::find_by_admin_inventory_id(id)' do
+    
     let!(:inventory) { create(:admin_inventory) }
+    
     context "given an admin_inventory with data that matches an imprintable" do
+      
       let!(:imprintable2) { create(:imprintable,
                                style_name: "Unisex Fine Jersey Long Sleeve Tee", style_catalog_no: "2001") }
       
@@ -59,7 +64,9 @@ describe Imprintable, type: :model do
     end
 
     context "given an admin_inventory with data that doesn't match an imprintable" do
+      
       let!(:imprint) { create(:imprintable, style_catalog_no: "FB2001") }
+      
       it "should return nil" do
         imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
         expect(imprintable).to be_nil

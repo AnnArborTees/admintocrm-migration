@@ -20,8 +20,10 @@ describe Admin::LineItem, type: :model do
   end
 
   describe '#determine_imprintable_id' do
+    
     let!(:admin_line) { create(:admin_line_item) }
     let!(:imprintable) { create(:imprintable, id: 72) }
+    
     context 'given an admin_line_item' do
       it 'should return imprintable_id of 72' do
         admin_line.set_imprintable
@@ -30,7 +32,9 @@ describe Admin::LineItem, type: :model do
     end
     
     context 'given an admin_line_item with inventory_id of nil' do
+      
       before{allow(admin_line).to receive(:inventory_id) {nil}}
+      
       it 'should return nil' do
         admin_line.set_imprintable
         expect(admin_line.determine_imprintable_id).to be_nil
@@ -38,7 +42,9 @@ describe Admin::LineItem, type: :model do
     end
     
     context 'given an admin_line_item with inventory_id of 614 and an imprintable and an imprintable variant' do
-    let!(:imprintable_variant) {create(:imprintable_variant, id: 22, imprintable_id: 72) }
+    
+      let!(:imprintable_variant) {create(:imprintable_variant, id: 22, imprintable_id: 72) }
+      
       it 'should return imprintable_variant_id 22' do
         admin_line.set_imprintable
         expect(admin_line.determine_imprintable_id).to eq(22)
@@ -50,6 +56,7 @@ describe Admin::LineItem, type: :model do
 
     let!(:admin_line) { create(:admin_line_item) }
     let!(:imprintable) { create(:imprintable, id: 72) }
+    
     context 'given an admin_line_item with inventory id 614 and an imprintable' do
       it 'should return a not nil @imprintable and @imprintable should contain data 
       "[id: 72, style_name: "Unisex Fine Jersey Long Sleeve Tee", style_catalog_no: "2001", brand_id: 1]"' do
@@ -65,7 +72,9 @@ describe Admin::LineItem, type: :model do
     end
     
     context 'given an admin_line_item with inventory id nil' do
+      
       before { allow(admin_line).to receive(:inventory_id) {nil} }
+      
       it 'should return @imprintable of nil and @variant of nil' do
         admin_line.set_imprintable
         @variant = admin_line.get_imprintable_variant
@@ -77,7 +86,9 @@ describe Admin::LineItem, type: :model do
     end
     
     context 'given an admin_line_item with inventory id 614 and an imprintable and an imprintable variant' do
+      
       let!(:variant) { create(:imprintable_variant, id: 22, imprintable_id: 72)}
+      
       it 'should return @variant not nil and @variant should contain data
       "[id: 22, imprintable_id: 72, size_id: 1, color_id: 1]"' do
         admin_line.set_imprintable
@@ -94,8 +105,10 @@ describe Admin::LineItem, type: :model do
   end
 
   describe '#determine_imprintable_type' do
+    
     let!(:admin_line) { create(:admin_line_item) }
     let!(:imprintable) { create(:imprintable, id: 72) }
+    
     context 'given an admin_line_item with inventory_id of 614 ' do
       it 'should return imprintable_type of "Imprintable' do
         admin_line.set_imprintable
@@ -104,7 +117,9 @@ describe Admin::LineItem, type: :model do
     end
     
     context 'given an admin_line_item with inventory_id of nil' do
+      
       before{allow(admin_line).to receive(:inventory_id) {nil}}
+      
       it 'should return nil' do
         admin_line.set_imprintable
         expect(admin_line.determine_imprintable_type).to be_nil
@@ -112,7 +127,9 @@ describe Admin::LineItem, type: :model do
     end
     
     context 'given an admin_line_item with inventory_id of 614 and an imprintable and an imprintable variant' do
-    let!(:imprintable_variant) {create(:imprintable_variant, id: 22, imprintable_id: 72) }
+    
+      let!(:imprintable_variant) {create(:imprintable_variant, id: 22, imprintable_id: 72) }
+      
       it 'should return imprintable_variant_type "Imprintable Variant"' do
         admin_line.set_imprintable
         expect(admin_line.determine_imprintable_type).to eq("Imprintable Variant")
@@ -121,24 +138,31 @@ describe Admin::LineItem, type: :model do
   end
 
   describe '#is_taxable?' do
-    let!(:admin_item) { create (:admin_line_item) }
-    let!(:admin_order) { create(:admin_order, id: 1, is_tax_exempt: true) }
+    
+    let(:admin_item) { create (:admin_line_item) }
+    let!(:admin_order) { create(:admin_order, is_tax_exempt: true) }
+    
     context 'given an admin_line_item with an order_id of 1 that has a value of false for is_tax_exempt' do
       it 'should return true' do
         expect(admin_item.is_taxable?).to eq(true)
       end
     end
     context 'given an admin_line_item with an order_id of 1 that has a value of true for is_tax_exempt' do
-      let!(:admin_order2) { create(:admin_order, id: 2, is_tax_exempt: false) }
-      before{ allow(admin_item).to receive(:order_id) {2} }
+      
+      let!(:admin_order2) { create(:admin_order, is_tax_exempt: false) }
+      
+      before{ allow(admin_item).to receive(:order_id) {admin_order2.id} }
       it 'should return false' do
         expect(admin_item.is_taxable?).to eq(false)
       end
     end
     context 'given an admin_line_item with a nil order_id' do
-      before { allow(admin_item).to receive(:order_id) {2}}
-      it 'should return false' do
-        expect(admin_item.is_taxable?).to eq(false)
+      
+      before { allow(admin_item).to receive(:order_id) {nil}}
+      
+      it 'should return true' do
+        byebug
+        expect(admin_item.is_taxable?).to eq(true)
       end
     end
   end

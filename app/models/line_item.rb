@@ -6,19 +6,19 @@ class LineItem < ActiveRecord::Base
   validates :job, presence: true
   validates :name, presence: true
   validates :quantity, presence: true
-  validates :taxable, presence: true
+  #validates :taxable, presence: true
   validates :description, presence: true
   validates :unit_price, presence: true
   validates :decoration_price, presence: true
-  
 
-
-  def self.create_from_admin_line_and_order(admin_item, order)
-    admin_item.set_imprintable
-   
-    return self.create(self.params_from_admin_item(admin_item, order))
+  def determine_subtotal
+    return sprintf('%.2f',((self.quantity * self.unit_price).to_f)).to_f
   end
 
+  def determine_tax(subtotal)
+    return self.taxable ? 0 : sprintf('%.2f', (subtotal * 0.06)).to_f
+  end
+  
   def self.create_from_admin_line_and_job(admin_item, job)
     admin_item.set_imprintable
 
@@ -37,8 +37,8 @@ class LineItem < ActiveRecord::Base
       #line_itemable_id: (admin_item.job_id.nil? ? 
       #order.id : Job.find_or_create_from_admin_job(order, Admin::Job.find(admin_item.job_id)).id),
       #line_itemable_type: (admin_item.job_id.nil? ? "Order" : "Job" ),
-      line_itemable_id: job.id,
-      line_itemable_type: "Job",
+      line_itemable_id: job.jobbable_id, 
+      line_itemable_type: admin_item.job_id.nil? ? "Order" : "Job",
       url: admin_item.get_url,
       imprintable_object_id: admin_item.determine_imprintable_id,
       imprintable_object_type: admin_item.determine_imprintable_type

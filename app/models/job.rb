@@ -15,7 +15,6 @@ class Job < ActiveRecord::Base
     end
 
     job = self.find_or_initialize_by( 
-      #id: admin_job.id
       name: admin_job.title,
       description: admin_job.description,
     )
@@ -68,6 +67,12 @@ class Job < ActiveRecord::Base
       end
     end
     return imprint_methods.uniq
+  end
+
+  def create_line_item_from_admin_line_item(admin_line)
+    line_item = LineItem::create_from_admin_line_and_job(admin_line, self)
+    line_items << line_item unless line_item.nil?
+    return line_item
   end
 
 end
