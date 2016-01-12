@@ -25,21 +25,7 @@ class Payment < ActiveRecord::Base
     end 
   end
 
-  def self.get_payment_method(payment)
-    case payment.payment_method
-    when 1
-      return "Cash"
-    when 2
-      return "Swiped Credit Card"
-    when 3
-      return "Check"
-    when 4
-      return "Paypal"
-    when 7
-      return "Wire Transfer"
-    end
-  end
-
+  #don't know if necessary
   def self.get_description(admin_payment)
     return "#{admin_payment.order.title} for #{admin_payment.order.customer.first_name} #{admin_payment.order.customer.last_name}"
   end
@@ -48,8 +34,8 @@ class Payment < ActiveRecord::Base
     payment = Payment::find_or_initialize_by(order_id: admin_payment.order_id)
     payment.salesperson_id = User::find_or_create_from_admin_order(admin_payment.order).id
     payment.store_id = Store::find_or_create_from_admin_order(admin_payment.order).id
-    payment.payment_method = self.determine_payment_method(admin_payment) #unless payment.nil?
-    payment.amount = admin_payment.amount #unless payment.nil?
+    payment.payment_method = self.determine_payment_method(admin_payment)
+    payment.amount = admin_payment.amount
     payment.t_description = self.get_description(admin_payment) 
     return payment
   end 

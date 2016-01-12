@@ -31,10 +31,13 @@ namespace :payment do
 
   task create_totals: :environment do
     totals = []
+    discounts = []
+    admin_order_totals = []
+    total_money = 0
     payments_applied_totals = []
     mismatched_payments = []
     start_time = Time.now
-    Admin::Order.where(type: "CustomOrder").limit(1000).each do |ao|
+    Admin::Order.where(type: "CustomOrder").limit(2000).each do |ao|
 
       subtotal = 0
       tax = 0
@@ -42,7 +45,7 @@ namespace :payment do
       payment_total = 0
       email = ao.admin.email
       
-      next if email.include?"ricky@annarbortshirtcompany.com" || email.include?("chantal@annarbortshirtcompany.com")
+      next if email.include?"ricky@" || email.include?("chantal@")
       
       order = Order::create_from_admin_order(ao)
       ao.jobs.each do |aj|
@@ -76,14 +79,23 @@ namespace :payment do
       #totals << "#{order.name} ==> $#{sprintf('%.2f', total)}" unless (total == 0)
 
       ao.payments.each do |ap|
-        payment = Payment::find_by_admin_payment(ap)
-        payment_total += payment.amount.to_f
+        if ap.amount < 0
+          discount = Discount::find_by_admin_payment(ap)
+          payment_total += discount.amount.to_f
+          discounts << discount
+        else
+          payment = Payment::find_by_admin_payment(ap)
+          payment_total += payment.amount.to_f
+        end
       end
 
       payment_total = sprintf('%.2f', payment_total).to_f
+      total = sprintf('%.2f', total ).to_f
+      
       if payment_total == total
         totals << "#{order.name} ==> Subtotal: $#{subtotal} ==> Tax: $#{tax} ==> Total: $#{sprintf('%.2f', total)} ==> Payment: $#{payment_total}" unless (total == 0)
         payments_applied_totals << "#{order.name} ==> $#{sprintf('%.2f', total)}"
+        total_money += sprintf('%.2f', total).to_f
       else
         mismatched_payments << "#{order.name}=>Total: $#{total}=>Payment: $#{payment_total}" 
       end 

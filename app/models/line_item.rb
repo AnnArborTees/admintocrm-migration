@@ -16,7 +16,7 @@ class LineItem < ActiveRecord::Base
   end
 
   def determine_tax(subtotal)
-    return self.taxable ? 0 : sprintf('%.2f', (subtotal * 0.06)).to_f
+    return self.taxable ? sprintf('%.2f', (subtotal * 0.06)).to_f : 0
   end
   
   def self.create_from_admin_line_and_job(admin_item, job)

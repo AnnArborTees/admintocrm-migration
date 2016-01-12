@@ -56,7 +56,7 @@ class Admin::LineItem < ActiveRecord::Base
 
   def is_taxable?
     admin_order = Admin::Order.find_by(id: self.order_id)
-    return admin_order.nil? ? true : admin_order.is_tax_exempt
+    return admin_order.is_tax_exempt ? false : true 
   end
 
   def get_url

@@ -1,7 +1,6 @@
 require 'rails_helper'
 
-describe Admin::Payment, type: :model do
-  
+describe Admin::Discount, type: :model do
   context 'Associations' do
     it { is_expected.to belong_to(:order).with_foreign_key(:order_id) }
     it { is_expected.to belong_to(:admin).with_foreign_key(:user_id) }
