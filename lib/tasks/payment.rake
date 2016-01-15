@@ -29,7 +29,28 @@ namespace :payment do
       byebug
   end
 
+  task create_discounts: :environment do
+    discounts = []
+    ricky_or_chantal = []
+
+    Admin::Order.where(type: "CustomOrder").each do |ao|
+      email = ao.admin.email
+      
+      next if email.include?"ricky@" || (email.include?("chantal@"))
+     
+      order = Order::create_from_admin_order(ao) 
+      ao.payments.each do |ap|
+        if ap.amount < 0
+          discount = Discount::find_by_admin_payment(ap)
+          discounts << discount
+        end   
+      end
+    end
+    byebug
+  end
+
   task create_totals: :environment do
+    
     totals = []
     discounts = []
     admin_order_totals = []
@@ -37,6 +58,7 @@ namespace :payment do
     payments_applied_totals = []
     mismatched_payments = []
     start_time = Time.now
+
     Admin::Order.where(type: "CustomOrder").limit(2000).each do |ao|
 
       subtotal = 0

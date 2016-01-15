@@ -1,3 +1,5 @@
+require 'csv'
+
 namespace :order do
   
   task create_crm_orders: :environment do
@@ -54,5 +56,18 @@ namespace :order do
     end_time = Time.now
     final_time = (end_time - start_time) / 60 
     byebug  
+  end
+
+  task find_admin_line_items_with_negative_price: :environment do
+    neg_lines = []
+    neg_price_admin_lines = CSV.open([Rails.root, "neg_price_admin_line_items.csv"].join('/'), 'w',{col_sep: "\t"})
+    neg_price_admin_lines << ["Name", "Description", "Quantity", "Price"]
+    neg_price_admin_lines << []
+    Admin::LineItem.where("unit_price < ?", 0).each do |li|
+      neg_lines << li
+      neg_price_admin_lines << [li.product, li.description, li.quantity, "$#{li.unit_price.to_f}"]
+    end
+    byebug
+    neg_price_admin_lines.close
   end
 end
