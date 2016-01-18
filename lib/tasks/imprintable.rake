@@ -4,6 +4,7 @@ namespace :imprintable do
   
   task variants_not_created: :environment do
     inventories_not_variants = []
+
     start_time = Time.now
 
     variants_not_found = CSV.open([Rails.root, "variants_not_found_from_inventories.csv"].join('/'), 'w', {col_sep: "\t"})
@@ -23,6 +24,7 @@ namespace :imprintable do
       color_not_found = true unless color 
       size = Size::find_by_admin_size(ai.size)
       size_not_found = true unless size
+
       variant = ImprintableVariant::find_by(
         imprintable_id: (imprintable.nil? ?  nil : imprintable.id),
         color_id: (color.nil? ? nil : color.id),
@@ -96,42 +98,5 @@ namespace :imprintable do
   final_time = (Time.now - start_time) / 60  
   imprintable_not_found.close
   byebug
-  end
-
-  task find_matching_brands: :environment do
-    match = false
-    matching_brands = []
-    non_matching_brands = []
-
-    Admin::Brand.all.each do |ab|
-      Brand.all.each do |b|
-        next if match
-        if b.name == ab.name
-          match = true
-          next
-        end
-      end
-
-      if match
-        matching_brands << ab.name
-        match = false
-      else
-        non_matching_brands << ab.name
-      end
-    end
-    byebug
-  end 
-
-  task find_matching_sizes: :environment do
-    matching_sizes = []
-    non_matching_sizes = []
-
-    Admin::InventorySize.all.each do |as|
-      size = Size::find_by_admin_size(as)
-
-      matching_sizes << as unless size.nil?
-      non_matching_sizes << as unless size
-    end
-    byebug
   end
 end

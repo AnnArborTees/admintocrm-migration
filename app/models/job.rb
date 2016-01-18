@@ -75,4 +75,25 @@ class Job < ActiveRecord::Base
     return line_item
   end
 
+  #come back to this, change it a little bit...maybe?
+  def create_imprints_from_job
+    imprints = []
+    imprint_methods = []
+    imprint_methods = self.determine_imprint_methods
+
+    imprint_methods.each do |imp|
+      imprint = Imprint::create_from_job_and_method(self, imp)
+      imprints << imprint
+    end
+    
+    return imprints.uniq
+  end
 end
+
+
+
+
+
+
+
+

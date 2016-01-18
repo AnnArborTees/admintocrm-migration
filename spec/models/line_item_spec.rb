@@ -11,7 +11,6 @@ describe LineItem, type: :model do
     it { is_expected.to validate_presence_of(:job)}
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:quantity) }
-    #it { is_expected.to validate_presence_of(:taxable) }
     it { is_expected.to validate_presence_of(:description) }
     it { is_expected.to validate_presence_of(:unit_price) }
   end
@@ -26,6 +25,7 @@ describe LineItem, type: :model do
     context 'given an admin_line_item with valid data and a job with valid data' do
 
       before { allow(admin_item).to receive(:job_id) {admin_job.id} }
+      before { allow(admin_item).to receive(:order_id) {admin_order.id} }
 
       it 'should create a line_item with line_itemable_id as job.id, and line_itemable_type as "Job"' do
         order = Order::create_from_admin_order(admin_order)
@@ -48,26 +48,11 @@ describe LineItem, type: :model do
         expect(line_item.url).to eq(admin_item.get_url)
       end
     end
-    
-    context 'given an admin_line_item with valid data and a job with a nil id' do
-      
-      before { allow(admin_item).to receive(:job_id) {nil} }
-      before { allow(admin_order).to receive(:id) {2} } 
-      
-      it 'should create a line_item with line_itemable_id as admin_item.order_id and line_itemable_type as "Order"' do
-        order = Order::create_from_admin_order(admin_order)
-        job = Job::find_or_create_from_admin_job(order, admin_job)
-        line_item = LineItem::create_from_admin_line_and_job(admin_item, job)
-        expect(admin_item.job_id).to be_nil
-        expect(line_item.line_itemable_type).to eq("Order")
-        expect(line_item.line_itemable_id).to eq(order.id)
-      end
-    end
   end
 
   describe '#determine_subtotal' do
-    let(:line_item) { create(:line_item, quantity: 20, decoration_price: 2.99) }
-    context 'given a line_item with quantity 10 and decoration_price of 2.99' do
+    let(:line_item) { create(:line_item, quantity: 20, unit_price: 2.99) }
+    context 'given a line_item with quantity 20 and unit_price of 2.99' do
       it 'should return 59.8' do
         subtotal = line_item.determine_subtotal
         expect(subtotal).to eq(59.8)
@@ -76,8 +61,8 @@ describe LineItem, type: :model do
   end
 
   describe '#determine_tax' do
-    let(:line_item) { create(:line_item, quantity: 20, decoration_price: 2.99, taxable: true) }
-    context 'given a line_item with quantity 10 and decoration_price of 2.99 and taxable true' do
+    let(:line_item) { create(:line_item, quantity: 20, unit_price: 2.99, taxable: true) }
+    context 'given a line_item with quantity 20 and unit_price of 2.99 and taxable true' do
       it 'should return a tax value of 3.59' do
         subtotal = line_item.determine_subtotal
         tax = line_item.determine_tax(subtotal)

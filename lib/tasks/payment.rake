@@ -75,8 +75,8 @@ namespace :payment do
         
         aj.line_items.each do |li|
           line = job.create_line_item_from_admin_line_item(li)
-          #subtotal += line.determine_subtotal
-          #tax = line.determine_tax(subtotal)
+          subtotal += line.determine_subtotal
+          tax = line.determine_tax(subtotal)
         end
       end
 
@@ -90,15 +90,16 @@ namespace :payment do
 
         ao.line_items.each do |li|
           line = job.create_line_item_from_admin_line_item(li)
-          #subtotal += line.determine_subtotal
-          #tax = line.determine_tax(subtotal)
+          subtotal += line.determine_subtotal
+          tax = line.determine_tax(subtotal)
         end
       end
       
-      subtotal = ao.subtotal.to_f
-      total = ao.total.to_f
-      tax = ao.tax.to_f
-      #totals << "#{order.name} ==> $#{sprintf('%.2f', total)}" unless (total == 0)
+      #subtotal = ao.subtotal.to_f
+      #total = ao.total.to_f
+      #tax = ao.tax.to_f
+      total = subtotal + tax
+      totals << "#{order.name} ==> $#{sprintf('%.2f', total)}" unless (total == 0)
 
       ao.payments.each do |ap|
         if ap.amount < 0
@@ -116,7 +117,7 @@ namespace :payment do
       
       if payment_total == total
         totals << "#{order.name} ==> Subtotal: $#{subtotal} ==> Tax: $#{tax} ==> Total: $#{sprintf('%.2f', total)} ==> Payment: $#{payment_total}" unless (total == 0)
-        payments_applied_totals << "#{order.name} ==> $#{sprintf('%.2f', total)}"
+        payments_applied_totals << "#{order.name} ==> $#{sprintf('%.2f', total)} ==> #{payment_total}"
         total_money += sprintf('%.2f', total).to_f
       else
         mismatched_payments << "#{order.name}=>Total: $#{total}=>Payment: $#{payment_total}" 
