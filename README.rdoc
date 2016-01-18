@@ -7,7 +7,7 @@ Things you may want to cover:
 
 * Ruby v2.1.1
 
-* Rails v2.4.3
+* Rails v4.2.3
 
 * System dependencies
 
