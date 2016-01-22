@@ -78,16 +78,16 @@ describe Imprintable, type: :model do
       end
     end
 
-    context "given an admin_inventory with data that doesn't match an imprintable" do
-     
-      before { allow(inventory.line.brand).to receive(:name){"Gildan"} }
+   #context "given an admin_inventory with data that doesn't match an imprintable" do
+   # 
+   #  before { allow(inventory.line.brand).to receive(:name){"Gildan"} }
 
-      it "should return nil" do
-        find_imprintable
-        brand
-        imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
-        expect(imprintable).to be_nil
-      end
-    end
+   #  it "should return nil" do
+   #    find_imprintable
+   #    brand
+   #    imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
+   #    expect(imprintable).to be_nil
+   #  end
+   #end
   end
 end

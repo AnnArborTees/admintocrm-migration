@@ -30,7 +30,10 @@ describe LineItem, type: :model do
       it 'should create a line_item with line_itemable_id as job.id, and line_itemable_type as "Job"' do
         order = Order::create_from_admin_order(admin_order)
         job = Job::find_or_create_from_admin_job(order,admin_job)
+        variant = ImprintableVariant::find_by_admin_inventory_id(admin_item.inventory_id)
+        imprintable = Imprintable::find_by_admin_inventory_id(admin_item.inventory_id)
         line_item = LineItem::create_from_admin_line_and_job(admin_item, job)
+        line_item.set_imprintables(admin_item)
         expect(order.class).to eq(Order)
         expect(admin_item.class).to eq(Admin::LineItem)
         expect(line_item.class).to eq(LineItem)
@@ -39,13 +42,13 @@ describe LineItem, type: :model do
         expect(line_item.taxable).to eq(admin_item.is_taxable?)
         expect(line_item.description).to eq(admin_item.description)
         expect(line_item.unit_price).to eq(admin_item.unit_price)
-        expect(line_item.line_itemable_id).to eq(job.jobbable_id)
+        expect(line_item.line_itemable_id).to eq(job.id)
         expect(line_item.line_itemable_type).to eq("Job")
-        expect(line_item.imprintable_price).to eq(admin_item.determine_imprintable_price)
-        expect(line_item.decoration_price).to eq(admin_item.determine_decoration_price)
-        expect(line_item.imprintable_object_id).to eq(admin_item.determine_imprintable_id)
-        expect(line_item.imprintable_object_type).to eq(admin_item.determine_imprintable_type)
-        expect(line_item.url).to eq(admin_item.get_url)
+        expect(line_item.imprintable_price).to eq(0.00)
+        expect(line_item.decoration_price).to eq(admin_item.unit_price)
+        expect(line_item.imprintable_object_id).to eq(variant.id)
+        expect(line_item.imprintable_object_type).to eq("Imprintable Variant")
+        expect(line_item.url).to eq(imprintable.supplier_link)
       end
     end
   end
