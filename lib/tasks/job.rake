@@ -40,4 +40,53 @@ namespace :job do
     puts "Success: #{success}, Failure: #{failure} Success Rate: #{ success_percent.round(2) }%"
     puts "\nTotal jobs: #{total}"
   end
+
+  task create_imprints: :environment do
+    imprints = []
+    start_time = Time.now
+
+    Admin::Order.all.each do |ao|
+      email = ao.admin.email
+      
+      next if email.include?"ricky@" 
+      next if email.include?"chantal@"
+
+      order = Order::create_from_admin_order(ao)
+
+      ao.jobs.each do |aj|
+        job = Job::find_or_create_from_admin_job(order, aj)
+        imprint_methods = job.determine_imprint_methods
+
+        imprint_methods.each do |im|
+          imprint = Imprint::create_from_job_and_method(job, im)
+          imprints << imprint
+        end
+      end
+    end
+    finish_time = (Time.now - start_time) / 60
+    byebug
+  end
+
+  task find_mismatched_brands: :environment do
+    matching_brands = []
+    non_matching_brands = []
+    found = false
+    Admin::Brand.all.each do |ab|
+      Brand.all.each do |b|
+        if (b.name == ab.name) || found
+          found = true
+          next
+        end
+      end
+
+      if found
+        matching_brands << ab.name
+      else
+        non_matching_brands << ab.name
+      end
+
+      found = false
+    end
+    byebug
+  end
 end

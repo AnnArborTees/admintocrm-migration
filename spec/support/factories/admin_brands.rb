@@ -1,6 +1,5 @@
 FactoryGirl.define do
   factory :admin_brand, :class => 'Admin::Brand' do
-    name "Gildan"
+    name "Boot scootin' boogy"
   end
-
 end

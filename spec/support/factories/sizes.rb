@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :size do
-    name 'XL'
-    display_value 'XL'    
+    name 'XXXXXXXXXXL'
+    display_value 'XXXXXXXXXXL'    
   end
-
 end

@@ -65,38 +65,23 @@ namespace :imprintable do
       variants_not_found << [ai.line.brand.id, ai.line.brand.name, ai.line.catalog_number,ai.color.color, ai.size.size, reason] unless variant 
     end
     finish_time = (Time.now - start_time) / 60
-    byebug
     variants_not_found.close
   end
 
-  task imprintables_not_created: :environment do
-    inventory_lines_not_imprintables = []
+  task find_missing_inventories: :environment do
+    missing_inventories = []
     start_time = Time.now
 
-    imprintable_not_found = CSV.open([Rails.root, "imprintable_not_found.csv"].join('/'), 'w',{col_sep: "\t"})
-    imprintable_not_found << ["Brand ID", "Brand Name", "Style Cat No", "Reason Not Imprintable"]
-    imprintable_not_found << [] #blank line between data
-
-    Admin::InventoryLine.all.each do |line|
-      reason = ""
-      
-      if(brand = Brand::find_by(name:  line.brand.name))
-        imprintable = Imprintable::find_by(
-          style_catalog_no: line.catalog_number,
-          brand_id: line.brand.id
-        )
-
-        reason = "Brand and catalog_no doesn't match imprintable in CRM" unless imprintable
+    Admin::LineItem.all.each do |al|
+      if al.inventory_id.nil?
+        next
       else
-        reason = "Brand not found in CRM"
-        imprintable = nil
+        inventory = Admin::Inventory.find_by(id: al.inventory_id)
+        
+        missing_inventories << al unless inventory 
       end
-
-      imprintable_not_found << [line.brand.id, line.brand.name, line.catalog_number, reason] unless imprintable
-      inventory_lines_not_imprintables << line unless imprintable
-    end 
-  final_time = (Time.now - start_time) / 60  
-  imprintable_not_found.close
-  byebug
+    end
+    finish_time = (Time.now - start_time) / 60
+    byebug
   end
 end

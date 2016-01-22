@@ -6,7 +6,6 @@ class LineItem < ActiveRecord::Base
   validates :job, presence: true
   validates :name, presence: true
   validates :quantity, presence: true
-  #validates :taxable, presence: true
   validates :description, presence: true
   validates :unit_price, presence: true
   validates :decoration_price, presence: true
@@ -20,8 +19,8 @@ class LineItem < ActiveRecord::Base
   end
   
   def self.create_from_admin_line_and_job(admin_item, job)
-    admin_item.set_imprintable
-
+    @imprintable = Imprintable::find_by_admin_inventory_id(admin_item.inventory_id)
+    @variant = ImprintableVariant::find_by_admin_inventory_id(admin_item.inventory_id) unless @imprintable.nil?
     return self.create(self.params_from_admin_item_and_job(admin_item, job)) 
   end
 
@@ -32,34 +31,17 @@ class LineItem < ActiveRecord::Base
       taxable: admin_item.is_taxable?,
       description: admin_item.description,
       unit_price: admin_item.unit_price,
-      decoration_price: admin_item.determine_decoration_price,
-      imprintable_price: admin_item.determine_imprintable_price,
+      decoration_price: admin_item.unit_price,
+      imprintable_price: 0.00,
       #line_itemable_id: (admin_item.job_id.nil? ? 
       #order.id : Job.find_or_create_from_admin_job(order, Admin::Job.find(admin_item.job_id)).id),
       #line_itemable_type: (admin_item.job_id.nil? ? "Order" : "Job" ),
-      line_itemable_id: job.jobbable_id, 
+      line_itemable_id: admin_item.job_id.nil? ? Order::find_by(id: admin_item.order_id).id, admin_item.job_id,
       line_itemable_type: admin_item.job_id.nil? ? "Order" : "Job",
-      url: admin_item.get_url,
-      imprintable_object_id: admin_item.determine_imprintable_id,
-      imprintable_object_type: admin_item.determine_imprintable_type
+      url: @imprintable.nil? ? nil : @imprintable.get_url, 
+      imprintable_object_id: admin_item.inventory_id.nil? ? 
+        nil : @variant.id, 
+      imprintable_object_type: admin_item.inventory_id.nil? ? "Imprintable" : "Imprintable Variant"
     }
   end
-
-# def self.alternative_params_from_admin_item(admin_item, order)
-#   {
-#     name: admin_item.product,
-#     quantity: admin_item.quantity,
-#     taxable: admin_item.taxable,
-#     description: admin_item.description,
-#     unit_price: admin_item.unit_price,
-  #   decoration_price: admin_item.determine_decoration_price,
-  #   imprintable_price: admin_item.determine_imprintable_price,
-#     line_itemable_id: (admin_item.job_id.nil? ? 
-#       order.id : Job.find_or_create_job_from_admin_job(order, Admin::Job.find(admin_item.job_id)).id),
-#     line_itemable_type: (admin_item.job_id.nil? ? "Order" : "Job" ),
-  #   url: admin_item.get_url,
-#     imprintable_object_id: admin_item.determine_imprintable_id,
-#     imprintable_object_type: admin_item.determine_imprintable_type
-#   }
-# end 
 end

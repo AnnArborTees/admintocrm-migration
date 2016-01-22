@@ -12,8 +12,9 @@ class Brand < ActiveRecord::Base
     self.name = self.name.capitalize
   end 
 
-  def get_unique_brand
-    brand = Admin::Brand.find_by(name: self.name)
+  def self.find_or_create_from_admin_brand_name(ab_name)
+    brand = Brand.find_or_create_by(name: ab_name)
+    brand.save
     return brand
   end
 end

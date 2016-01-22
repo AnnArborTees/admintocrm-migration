@@ -3,17 +3,31 @@ require 'csv'
 namespace :order do
   
   task create_crm_orders: :environment do
-    Admin::Order.limit(10).each do |admin_order|
-      order = Order.create_from_admin_order(admin_order)
-      order.create_shipment_from_admin_order(admin_order)
+    orders_created = []
+    start_time = Time.now
+    chantals_found = 0
+    rickys_found = 0
+    Admin::Order.all.each do |ao|
+      email = ao.admin.email
       
-      admin_order.jobs.each do |aj|
-        job = order.create_job_from_admin_job(aj)
-        admin_order.line_items.each do |li|
-          line = order.create_line_item_from_admin_line_and_job(li, job)
-        end
+      if (email.include?("chantal@"))
+        chantals_found += 1
+      elsif (email.include?("ricky@"))
+        rickys_found += 1
       end
+     
+      next if ao.title.include? "FBA"
+      next if email.include? "chantal@"
+      next if email.include? 'ricky@'
+      next if ao.status.downcase.include? "cancelled"
+      
+      order = Order.create_from_admin_order(ao)
+      order.create_shipment_from_admin_order(ao)
+      orders_created << order
+
     end
+    total_time = (Time.now - start_time) / 60 
+    byebug
   end
 
   task create_line_items: :environment do
@@ -28,7 +42,7 @@ namespace :order do
       order = Order::create_from_admin_order(ao)
 
       ao.jobs.each do |aj|
-        job = Job::find_or_create_from_admin_job(ao, aj)
+        job = Job::find_or_create_from_admin_job(order, aj)
 
         aj.line_items.each do |li|
            line = LineItem::create_from_admin_line_and_job(li, job) 
@@ -69,5 +83,21 @@ namespace :order do
     end
     byebug
     neg_price_admin_lines.close
+  end
+
+  task find_lines_with_no_imprintable_type: :environment do
+    no_variant_or_imprintable = []
+    LineItem::all.each do |li|
+      type = li.imprintable_object_type
+
+      if (type == "Imprintable" || type == "Imprintable Variant" || type == "ImprintableVariant")
+        #no_variant_or_imprintable << li
+        next
+      elsif type.nil?
+        no_variant_or_imprintable << li
+        #next
+      end
+    end
+    byebug
   end
 end

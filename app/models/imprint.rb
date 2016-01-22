@@ -4,9 +4,11 @@ class Imprint < ActiveRecord::Base
   validates :job, presence: true
 
   def self.create_from_job_and_method(job, imprint_method)
-    imprint = Imprint::find_or_initialize_by(
+    imprint = Imprint::find_or_create_by(
       job_id: job.id,
       description: imprint_method
     )
+    imprint.save
+    return imprint
   end
 end

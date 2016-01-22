@@ -28,13 +28,19 @@ class Job < ActiveRecord::Base
     if aj.nil? || aj.title.blank?
       return nil
     end
+
+    if aj.description.nil? || aj.description.blank?
+      aj.description = "no description from admin job"
+    end
     
-    job = self.find_or_initialize_by(
+    job = self.find_or_create_by(
       name: aj.title,
       description: aj.description
     )
+    #job.order = order
     job.jobbable_id = order.id
     job.jobbable_type = "Order" 
+    job.save
     return job
   end
   

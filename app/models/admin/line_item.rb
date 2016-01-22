@@ -12,54 +12,49 @@ class Admin::LineItem < ActiveRecord::Base
   validates :taxable, presence: true
   validates :job_id, presence: true 
 
-  def set_imprintable
-    @imprintable = Imprintable::find_by_admin_inventory_id(self.inventory_id)
-    @variant = ImprintableVariant::find_by_admin_inventory_id(self.inventory_id) unless @imprintable.nil?
-  end
+ #def set_imprintable
+ #  @imprintable = Imprintable::find_by_admin_inventory_id(self.inventory_id)
+ #  @variant = ImprintableVariant::find_by_admin_inventory_id(self.inventory_id) unless @imprintable.nil?
+ #end
 
-  def get_imprintable
-    @imprintable
-  end
+ #def get_imprintable
+ #  @imprintable
+ #end
 
-  def get_imprintable_variant
-    @variant
-  end
+ #def get_imprintable_variant
+ #  @variant
+ #end
 
-  def determine_imprintable_id
-    if @imprintable.nil?
-      return nil
-    elsif @variant.nil?
-      return @imprintable.id
-    else
-      return @variant.id
-    end
-  end 
+ #def determine_imprintable_id
+ #  if @imprintable.nil?
+ #    return nil
+ #  elsif @variant.nil?
+ #    return @imprintable.id
+ #  else
+ #    return @variant.id
+ #  end
+ #end 
 
-  def determine_imprintable_price
-    return (self.get_imprintable.nil? ? nil : self.get_imprintable.base_price)
-  end
+ #def determine_imprintable_price
+ #  return (self.get_imprintable.nil? ? nil : self.get_imprintable.base_price)
+ #end
 
-  def determine_decoration_price
-    return (self.determine_imprintable_price.nil? ? 
-            self.unit_price : self.unit_price - self.determine_imprintable_price)
-  end
+ #def determine_decoration_price
+ #  return (self.determine_imprintable_price.nil? ? 
+ #          self.unit_price : self.unit_price - self.determine_imprintable_price)
+ #end
 
-  def determine_imprintable_type
-    if @imprintable.nil?
-      return nil
-    elsif @variant.nil?
-      return "Imprintable"
-    else
-      return "Imprintable Variant"
-    end
-  end
-
+ #def determine_imprintable_type
+ #  if @imprintable.nil?
+ #    return nil
+ #  elsif @variant.nil?
+ #    return "Imprintable"
+ #  else
+ #    return "Imprintable Variant"
+ #  end
+ #end
   def is_taxable?
     admin_order = Admin::Order.find_by(id: self.order_id)
     return admin_order.is_tax_exempt ? false : true 
-  end
-
-  def get_url
-    return @imprintable.nil? ? nil : @imprintable.supplier_link
   end
 end

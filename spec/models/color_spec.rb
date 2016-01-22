@@ -9,17 +9,31 @@ describe Color, type: :model do
     it {is_expected.to validate_presence_of(:name)}
   end
 
-  describe "::find_by_admin_color(admin_color)" do
+  describe "::find_or_create_by_admin_color_name(admin_color.color)" do
     
-    let!(:admin_color) { create(:admin_inventory_color) }
+    let(:admin_color) { create(:admin_inventory_color) }
     let!(:color) { create(:color) }
-    
-    context 'given an admin_color with color "Green"' do
-      it 'should return a color with name "Green"' do
-        new_color = Color::find_by_admin_color(admin_color)
+    context 'given an admin_color with out matching information in crm colors' do
+      it 'should return a new color with name admin_color information' do
+        
+        not_found = Color::find_by(name: admin_color.color)
+        color =  Color::find_or_create_by_admin_color_name(admin_color.color)
 
-        expect(new_color.class).to eq(Color)
-        expect(new_color.name).to eq("Green")
+        expect(not_found).to be_nil
+        expect(color.name).to eq(admin_color.color)
+      end
+    end
+
+    context 'given an admin_color with matching information in crm colors' do
+      
+      before { allow(admin_color).to receive(:color) {color.name} }
+
+      it 'should return the color found in crm' do
+        found = Color::find_by(name: admin_color.color)
+        color = Color::find_or_create_by_admin_color_name(admin_color.color)
+      
+        expect(found.name).to eq(admin_color.color)
+        expect(color.name).to eq(admin_color.color)
       end
     end
   end

@@ -7,6 +7,7 @@ class Admin::Inventory < ActiveRecord::Base
   validates :size, presence: true
   validates :color, presence: true
   validates :line, presence: true
+  validates :brand, presence: true
 
   def get_brand
     "#{line.brand.name}"

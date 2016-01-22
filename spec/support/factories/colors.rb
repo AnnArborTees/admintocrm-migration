@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :color do
-    name 'Green'  
+    name 'Fizzy Purple'  
   end
 
 end

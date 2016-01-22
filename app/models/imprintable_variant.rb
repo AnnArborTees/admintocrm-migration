@@ -28,12 +28,21 @@ class ImprintableVariant < ActiveRecord::Base
   def self.find_by_admin_inventory_id(id)
     inventory = Admin::Inventory.find_by(id: id)
     imprintable = Imprintable::find_by_admin_inventory_id(id)
-    color = Color::find_by_admin_color(inventory.color)
-    size = Size::find_by_admin_size(inventory.size)
-    return self.find_by(
-      imprintable_id: (imprintable.nil? ? nil : imprintable.id),
-      color_id: (color.nil? ? nil : color.id),
-      size_id: (size.nil? ? nil : size.id)
-      )
+    color = Color::find_or_create_by_admin_color_name(inventory.color.color) unless inventory.nil?
+    size = Size::find_or_create_by_admin_size_name(inventory.size.size) unless inventory.nil?
+    
+    if size && imprintable && color
+      variant = self.find_or_initialize_by(
+        imprintable_id: imprintable.id,
+        color_id: color.id,
+        size_id: size.id
+        )
+      if variant.new_record?
+        variant.save
+      end
+      return variant
+    else
+      return nil
+    end
   end
 end

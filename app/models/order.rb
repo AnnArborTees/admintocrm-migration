@@ -57,6 +57,7 @@ class Order < ActiveRecord::Base
 
   def self.create_from_admin_order(admin_order)
     order = self.find_or_initialize_by(id: admin_order.id)
+    #order.valid? ? order.imported_from_admin = false : order.imported_from_admin = true
     order.name = admin_order.title
     order.firstname = admin_order.customer.first_name
     order.lastname = admin_order.customer.last_name

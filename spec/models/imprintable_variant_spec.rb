@@ -15,13 +15,20 @@ describe ImprintableVariant, type: :model do
     it{is_expected.to validate_presence_of(:size)}
   end
 
-  let!(:inventory) { create(:admin_inventory) }
-  let!(:impvar)  { create(:imprintable_variant) }
+  let(:inventory) { create(:admin_inventory) }
+  let!(:size) { create(:size, display_value: inventory.size.size) }
+  let!(:color) { create(:color, name: inventory.color.color) }
+  let!(:brand) { create(:brand, name: inventory.brand.name) }
+  let!(:imprintable) { create(:imprintable, brand_id: brand.id) }
+  let!(:imprintable_variant) { create(:imprintable_variant, imprintable_id: imprintable.id, size_id: size.id, color_id: color.id) } 
   
   describe '::find_by_admin_inventory_id(id)' do
     context "given an admin_inventory with matching data to imprintable_variant" do
+
+      before{allow(inventory.size).to receive(:size){size.name}}
       it "should return an imprintable_variant with [color_name: 'Green', size: 'XL', 
       catalog_no: '2001', brand_name: 'Gildan'" do
+     
         imp_variant = ImprintableVariant::find_by_admin_inventory_id(inventory.id)
         expect(imp_variant).to_not be_nil
         expect(imp_variant.get_brand).to eq(inventory.get_brand)
@@ -32,11 +39,10 @@ describe ImprintableVariant, type: :model do
     end
     
     context "given an admin_inventory without matching data to imprintable_variant" do
-      
-      let!(:admin_inventory_size) { create(:admin_inventory_size, size: "XXXL")}
-      let!(:inventory) { create(:admin_inventory, size: admin_inventory_size) }
-
+     
+      before{ allow(inventory).to receive(:id) {200}} 
       it "should return nil" do
+        inventory
         imp_variant = ImprintableVariant::find_by_admin_inventory_id(inventory.id)
         expect(imp_variant).to be_nil
       end

@@ -12,34 +12,35 @@ describe Admin::Inventory, type: :model do
     it { is_expected.to validate_presence_of(:size) }
     it { is_expected.to validate_presence_of(:color) }
     it { is_expected.to validate_presence_of(:line) }
+    it { is_expected.to validate_presence_of(:brand) }
   end
 
   let(:inventory) { create(:admin_inventory) }
   describe '#get_brand' do
     context "given a valid admin_inventory with a brand_name of 'Gildan'" do
       it "should return 'Gildan'" do
-        expect(inventory.get_brand).to eq("Gildan") 
+        expect(inventory.get_brand).to eq(inventory.brand.name) 
       end
     end
   end
   describe '#get_color' do
     context "given a valid admin_inventory with a color of 'Green'" do
       it "should return 'Green'" do
-        expect(inventory.get_color).to eq("Green")
+        expect(inventory.get_color).to eq(inventory.color.color)
       end
     end
   end
   describe '#get_size' do
     context "given a valid admin_inventory with a size of 'XL'" do
       it "should return 'XL'" do
-        expect(inventory.get_size).to eq("XL")
+        expect(inventory.get_size).to eq(inventory.size.size)
       end
     end
   end
   describe '#catalog_no' do
     context "given a valid admin_inventory with a catalog_number of '2001'" do
       it "should return '2001'" do
-        expect(inventory.catalog_no).to eq("2001")
+        expect(inventory.catalog_no).to eq(inventory.catalog_no)
       end
     end
   end
