@@ -30,6 +30,33 @@ namespace :order do
     byebug
   end
 
+  task find_mismatched_orders: :environment do
+    missing_orders = []
+    start_time = Time.now
+    match = false
+
+    Admin::Order.limit(1000).each do |ao|
+      Order.all.each do |o|
+        if match
+          next
+        end
+      
+        if o.id == ao.id
+          match = true
+        end
+      end
+
+      if match
+        match = false
+        next
+      else
+        missing_orders << ao      
+      end
+    end
+
+    byebug
+  end
+
   task create_line_items: :environment do
     lines = []
     orders = []

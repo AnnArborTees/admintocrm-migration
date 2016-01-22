@@ -21,13 +21,14 @@ describe Admin::LineItem, type: :model do
 
   describe '#is_taxable?' do
     
-    let!(:admin_order) { create(:admin_order, is_tax_exempt: true) }
-    let!(:admin_item) { create (:admin_line_item) }
+    let(:admin_item) { create (:admin_line_item) }
+    let(:admin_order) { create(:admin_order, id: admin_item.order_id, is_tax_exempt: true) }
     
     context 'given an admin_line_item with an order_id matching an Admin::Order 
              that has a value of true for is_tax_exempt' do
       
       it 'should return false' do
+        admin_order
         expect(admin_item.is_taxable?).to eq(false)
       end
     end

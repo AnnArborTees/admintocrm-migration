@@ -17,36 +17,6 @@ class Order < ActiveRecord::Base
   validates :salesperson, presence: true
   validates :name, presence: true
   
-  # def self.create_crm_order(admin_order)
-    # this is not bad, but the find or initialize below is better
-  #  Order.create(
-  #    :id => admin_order.id, 
-  #    :firstname => admin_order.customer.first_name,
-  #    :lastname => admin_order.customer.last_name, 
-  #    :email => admin_order.customer.email, 
-  #    :in_hand_by => DateTime.now,
-  #    :terms => "terms", 
-  #    :delivery_method => "ypsi", 
-  #    :store_id => Store.find_or_create_from_admin_order(admin_order).id,
-  #    :salesperson_id => User.find_or_create_from_admin_order(admin_order).id
-  #  )
-  #end
-
-  #def self.update_crm_order(admin_order)
-  # Order.update doesn't exist
-  #  Order.update(
-  #    admin_order.id,
-  #    :firstname => admin_order.customer.first_name,
-  #    :lastname => admin_order.customer.last_name,
-  #    :email => admin_order.customer.email,
-  #    :in_hand_by => DateTime.now,
-  #    :terms => "terms",
-  #    :delivery_method => "ypsi",
-  #    :store_id => Store.find_or_create_from_admin_order(admin_order).id,
-  #    :salesperson_id => User.find_or_create_from_admin_order(admin_order).id
-  #  ) 
-  #end 
-  
   def self.create_from_admin_order_alternative(admin_order)
     if order = Order.find_by(id: admin_order.id)
       order.update(self.params_from_admin_order(admin_order))
@@ -57,7 +27,7 @@ class Order < ActiveRecord::Base
 
   def self.create_from_admin_order(admin_order)
     order = self.find_or_initialize_by(id: admin_order.id)
-    #order.valid? ? order.imported_from_admin = false : order.imported_from_admin = true
+    order.valid? ? order.imported_from_admin = false : order.imported_from_admin = true
     order.name = admin_order.title
     order.firstname = admin_order.customer.first_name
     order.lastname = admin_order.customer.last_name
@@ -99,31 +69,6 @@ class Order < ActiveRecord::Base
       return "Paid in full on purchase"
     end
   end
-=begin
-
-admin_order terms
-+------------------+
-| terms            |
-+------------------+
-| NULL             |
-| 5050             |
-| invoice          |
-| paid_on_pickup   |
-| paid_on_purchase |
-+------------------+
-
-order terms
-+--------------------------+
-| terms                    |
-+--------------------------+
-| Fulfilled by Amazon      |
-| Half down on purchase    |
-| Net 30                   |
-| Net 60                   |
-| Paid in full on pick up  |
-| Paid in full on purchase |
-+--------------------------+
-=end
 
   def self.get_ship_method_from_admin_order(admin_order)
     case admin_order.ship_method
@@ -135,39 +80,6 @@ order terms
       return "Ship to one location"
     end
   end
-=begin
-admin_order delivery methods
-+------------------------------+
-| ship_method                  |
-+------------------------------+
-| AATC Delivery                |
-| iAmazon FBA                  |
-| FedEx                        |
-| Pick Up                      |
-| Pick Up (Ypsilanti)          |
-| UPS                          |
-| UPS 2nd Day Air              |
-| UPS 3 Day Select             |
-| UPS Ground                   |
-| UPS Next Day AM              |
-| UPS Next Day Saver           |
-| USPS                         |
-| USPS Express                 |
-| USPS First Class or Priority |
-| usps_first_class             |
-+------------------------------+
-
-order delivery_methods
-+----------------------------+
-| delivery_method            |
-+----------------------------+
-| NULL                       |
-| Pick up in Ann Arbor       |
-| Pick up in Ypsilanti       |
-| Ship to multiple locations |
-| Ship to one location       |
-+----------------------------+
-=end
 
   def create_shipment_from_admin_order(admin_order)
     shipment = Shipment.new_shipment_from_admin_order(admin_order)

@@ -30,10 +30,9 @@ describe LineItem, type: :model do
       it 'should create a line_item with line_itemable_id as job.id, and line_itemable_type as "Job"' do
         order = Order::create_from_admin_order(admin_order)
         job = Job::find_or_create_from_admin_job(order,admin_job)
+        line_item = LineItem::create_from_admin_line_and_job(admin_item, job)
         variant = ImprintableVariant::find_by_admin_inventory_id(admin_item.inventory_id)
         imprintable = Imprintable::find_by_admin_inventory_id(admin_item.inventory_id)
-        line_item = LineItem::create_from_admin_line_and_job(admin_item, job)
-        line_item.set_imprintables(admin_item)
         expect(order.class).to eq(Order)
         expect(admin_item.class).to eq(Admin::LineItem)
         expect(line_item.class).to eq(LineItem)
