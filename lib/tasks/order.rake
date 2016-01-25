@@ -27,7 +27,6 @@ namespace :order do
 
     end
     total_time = (Time.now - start_time) / 60 
-    byebug
   end
 
   task find_mismatched_orders: :environment do
@@ -96,7 +95,6 @@ namespace :order do
 
     end_time = Time.now
     final_time = (end_time - start_time) / 60 
-    byebug  
   end
 
   task find_admin_line_items_with_negative_price: :environment do
@@ -125,6 +123,46 @@ namespace :order do
         #next
       end
     end
+    byebug
+  end
+
+  task create_admin_proofs: :environment do
+    start_time = Time.now
+    proofs_created = []
+    nils_found = []
+
+    Order.all.each do |o|
+
+      ao = Admin::Order.find_by(id: o.id)
+
+      if ao.nil?
+        nils_found << o
+        next
+      else
+        if o.imported_from_admin
+          ao.jobs.each do |aj|
+            aj.proofs.each do |ap|
+              proof = AdminProof::create_from_admin_job_and_proof(aj, ap)
+              proofs_created << proof
+            end
+          end
+        end
+      end
+    end
+    finish_time = (Time.now - start_time) / 60
+  end
+
+  task find_messed_up_proofs: :environment do
+    start_time = Time.now
+    proofs_messed_up = []
+
+    AdminProof::all.each do |ap|
+      if ap.file_url.include? "nil"
+        proofs_messed_up << ap
+      end
+    end
+
+    finish_time = (Time.now - start_time) / 60
     byebug
   end
 end

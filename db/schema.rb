@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160122201944) do
+ActiveRecord::Schema.define(version: 20160125175025) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "trackable_id",   limit: 4
@@ -401,6 +401,14 @@ ActiveRecord::Schema.define(version: 20160122201944) do
   add_index "admin_proof_images", ["custom_order_id"], name: "index_proof_images_on_custom_order_id", using: :btree
   add_index "admin_proof_images", ["job_id"], name: "index_proof_images_on_job_id", using: :btree
   add_index "admin_proof_images", ["status"], name: "index_proof_images_on_status", using: :btree
+
+  create_table "admin_proofs", force: :cascade do |t|
+    t.integer  "order_id",      limit: 4
+    t.string   "file_url",      limit: 255
+    t.string   "thumbnail_url", limit: 255
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
 
   create_table "admin_queued_mails", force: :cascade do |t|
     t.text   "object", limit: 65535

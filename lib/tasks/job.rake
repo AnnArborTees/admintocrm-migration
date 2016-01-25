@@ -87,6 +87,21 @@ namespace :job do
 
       found = false
     end
+  end
+
+  task find_jobs_with_no_proofs: :environment do
+    start_time = Time.now
+    no_proofs = []
+    
+    Admin::Order.all.each do |ao|
+      ao.jobs.each do |aj|
+        next if aj.proofs.count > 0
+
+        no_proofs << aj
+      end
+    end
+
+    finish_time = (Time.now - start_time) / 60
     byebug
   end
 end

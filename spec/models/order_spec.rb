@@ -6,9 +6,9 @@ describe Order, type: :model do
     it { is_expected.to have_many(:line_items).through(:jobs).with_foreign_key(:line_itemable_id) } 
     it { is_expected.to have_many(:jobs) }
     it { is_expected.to have_many(:payments).with_foreign_key(:order_id) }
+    it { is_expected.to have_many(:admin_proofs).with_foreign_key(:order_id) }
     it { is_expected.to belong_to(:store) }
     it { is_expected.to belong_to(:salesperson) }
-    #it { is_expected.to belong_to(:payment).with_foreign_key(:order_id) }
   end
 
   context 'Validations' do
