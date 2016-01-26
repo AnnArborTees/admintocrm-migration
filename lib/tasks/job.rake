@@ -19,7 +19,7 @@ namespace :job do
       #blank line between headers and info
       failures << []
       successes << []
-      imnprint_methods = []
+      imprint_methods = []
 
       Admin::Job.joins(:order).where("created_at > '#{y.to_i}' && created_at < '#{y.to_i + 1}'").each do |aj|
   	next if aj.order.title.include? "FBA" 
@@ -29,22 +29,22 @@ namespace :job do
   	file_paths = aj.proofs.map{|f| f.file_path}
 
   	if imprint_methods.empty?
-  	 #found = false
-  	 #IMPRINT_HASH.each do |key, value|
-  	 #  if key == aj.id
-  	 #    found = true
-  	 #    imprint_methods << value
-  	 #  end
-  	 #end
-  	# if !found
+  	 found = false
+  	 IMPRINT_HASH.each do |key, value|
+  	   if key == aj.id
+  	     found = true
+  	     imprint_methods << value
+  	   end
+  	 end
+  	 if !found
   	    failure +=1
-  	    failures << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + file_paths
-  	# else  
-  	#   successes << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + imprint_methods + file_paths
-  	#   success += 1
-  	# end
+  	    failures << [aj.custom_order_id, aj.id, aj.title.gsub(',', ' ').strip, aj.description.gsub(',', ' ').strip,] + file_paths
+  	 else  
+  	   successes << [aj.custom_order_id, aj.id, aj.title.gsub(',', ' ').strip, aj.description.gsub(',', ' ').strip,] + [imprint_methods] + file_paths
+  	   success += 1
+  	 end
   	else
-  	  successes << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + imprint_methods + file_paths
+  	  successes << [aj.custom_order_id, aj.id, aj.title.gsub(',', ' ').strip, aj.description.gsub(',', ' ').strip,] + [imprint_methods] + file_paths
   	  success +=1
   	end
   	total +=1
