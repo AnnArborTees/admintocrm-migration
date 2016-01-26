@@ -7,7 +7,7 @@ class Job < ActiveRecord::Base
   validates :name, presence: true
   validates :description, presence: true
 
-  include ImprintHelper
+  include ImprintMethodHelper
 
   def self.new_job_from_admin_job(admin_job)
     if admin_job.title.blank?
@@ -37,7 +37,6 @@ class Job < ActiveRecord::Base
       name: aj.title,
       description: aj.description
     )
-    #job.order = order
     job.jobbable_id = order.id
     job.jobbable_type = "Order" 
     job.save
@@ -73,12 +72,6 @@ class Job < ActiveRecord::Base
       end
     end
     return imprint_methods.uniq
-  end
-
-  def create_line_item_from_admin_line_item(admin_line)
-    line_item = LineItem::create_from_admin_line_and_job(admin_line, self)
-    line_items << line_item unless line_item.nil?
-    return line_item
   end
 
   #come back to this, change it a little bit...maybe?

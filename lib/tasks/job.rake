@@ -1,44 +1,62 @@
 require 'csv'
+require 'yaml'
 
 namespace :job do
-  task :imprint_method_finder_test, [:year] => :environment do |y, args|
+  task imprint_method_finder_test: :environment do 
 
-    success, failure = 0, 0
-    total = 0
-    success_percent = 0.0
+    years = ["2011", "2012", "2013", "2014", "2015"]
+
+    years.each do |y|
+      
+      success, failure = 0, 0
+      total = 0
+      success_percent = 0.0
     
-    failures = CSV.open([Rails.root, "unmappable_#{args.year.to_i}.csv"].join('/'), 'w', {col_sep: "\t"})
-    successes = CSV.open([Rails.root, "mappable_#{args.year.to_i}.csv"].join('/'), 'w', {col_sep: "\t"})
-    failures << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Proof Image URL'] 
-    successes << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Imprints', 'Proof Image URL']
-    #blank line between headers and info
-    failures << []
-    successes << []
+      failures = CSV.open([Rails.root, "unmappable_#{y.to_i}.csv"].join('/'), 'w', {col_sep: "\t"})
+      successes = CSV.open([Rails.root, "mappable_#{y.to_i}.csv"].join('/'), 'w', {col_sep: "\t"})
+      failures << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Proof Image URL'] 
+      successes << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Imprints', 'Proof Image URL']
+      #blank line between headers and info
+      failures << []
+      successes << []
+      imnprint_methods = []
 
-    Admin::Job.joins(:order).where("created_at > '#{args.year.to_i}' && created_at < '#{args.year.to_i + 1}'").each do |aj|
-      next if aj.order.title.include? "FBA" 
-      job = Job.new_job_from_admin_job(aj)
-     
-      imprint_methods = job.determine_imprint_methods
-      file_paths = aj.proofs.map{|f| f.file_path}
+      Admin::Job.joins(:order).where("created_at > '#{y.to_i}' && created_at < '#{y.to_i + 1}'").each do |aj|
+  	next if aj.order.title.include? "FBA" 
+  	job = Job.new_job_from_admin_job(aj)
+  	  
+  	imprint_methods = job.determine_imprint_methods
+  	file_paths = aj.proofs.map{|f| f.file_path}
 
-      if imprint_methods.empty?
-        failure +=1
-        failures << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + file_paths
-      else
-        successes << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + imprint_methods + file_paths
-        success +=1
+  	if imprint_methods.empty?
+  	 #found = false
+  	 #IMPRINT_HASH.each do |key, value|
+  	 #  if key == aj.id
+  	 #    found = true
+  	 #    imprint_methods << value
+  	 #  end
+  	 #end
+  	# if !found
+  	    failure +=1
+  	    failures << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + file_paths
+  	# else  
+  	#   successes << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + imprint_methods + file_paths
+  	#   success += 1
+  	# end
+  	else
+  	  successes << [aj.custom_order_id, aj.id, aj.title.strip, aj.description.strip,] + imprint_methods + file_paths
+  	  success +=1
+  	end
+  	total +=1
       end
-     
-      total +=1
-    end
-   
-    success_percent = ((1.0 * success) / (1.0 * total)) * 100.00
+  	
+  	 success_percent = ((1.0 * success) / (1.0 * total)) * 100.00
 
-    failures.close 
-    successes.close
-    puts "Success: #{success}, Failure: #{failure} Success Rate: #{ success_percent.round(2) }%"
-    puts "\nTotal jobs: #{total}"
+  	 failures.close 
+  	 successes.close
+  	 puts "Success: #{success}, Failure: #{failure} Success Rate: #{ success_percent.round(2) }%"
+  	 puts "\nTotal jobs: #{total}"
+    end
   end
 
   task create_imprints: :environment do
