@@ -19,10 +19,18 @@ class LineItem < ActiveRecord::Base
   end
   
   def self.create_from_admin_line_and_job(admin_item, job)
-    return self.create(self.params_from_admin_item_and_job(admin_item, job)) 
+    line = self.find_or_initialize_by(self.params_from_admin_item_and_job(admin_item, job))
+    
+    if line.new_record?
+      line.save
+    end
+    
+    return line 
   end
 
   def self.params_from_admin_item_and_job(admin_item, job)
+    imprintable = Imprintable::find_by_admin_inventory_id(admin_item.inventory_id)
+    variant = ImprintableVariant::find_by_admin_inventory_id(admin_item.inventory_id) unless imprintable.nil?
     {
       name: admin_item.product,
       quantity: admin_item.quantity,
@@ -33,9 +41,9 @@ class LineItem < ActiveRecord::Base
       imprintable_price: 0.00,
       line_itemable_id: admin_item.job_id.nil? ? Order::find_by(id: admin_item.order_id).id : job.id,
       line_itemable_type: admin_item.job_id.nil? ? "Order" : "Job",
-      url: Imprintable::find_by_admin_inventory_id(admin_item.inventory_id).supplier_link, 
+      url: imprintable.nil? ? nil : imprintable.supplier_link, 
       imprintable_object_id: admin_item.inventory_id.nil? ? 
-        nil : ImprintableVariant::find_by_admin_inventory_id(admin_item.inventory_id).id, 
+        nil : variant.id, 
       imprintable_object_type: admin_item.inventory_id.nil? ? "Imprintable" : "Imprintable Variant"
     }
   end

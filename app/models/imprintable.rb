@@ -16,7 +16,7 @@ class Imprintable < ActiveRecord::Base
   
   def self.find_by_admin_inventory_id(id)
     inventory = Admin::Inventory.eager_load(:brand).find_by(id: id)
-    return Imprintable.find_or_create_from_admin_line(inventory.line) unless inventory.nil?
+    return self.find_or_create_from_admin_line(inventory.line) unless inventory.nil?
   end
  
   def self.find_by_admin_inventory(inventory)

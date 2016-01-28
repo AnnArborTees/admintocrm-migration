@@ -3,30 +3,45 @@ require 'csv'
 namespace :order do
   
   task create_crm_orders: :environment do
-    orders_created = []
-    start_time = Time.now
-    chantals_found = 0
-    rickys_found = 0
-    Admin::Order.all.each do |ao|
-      email = ao.admin.email
-      
-      if (email.include?("chantal@"))
-        chantals_found += 1
-      elsif (email.include?("ricky@"))
-        rickys_found += 1
-      end
-     
+    Admin::Order.limit(3000).each do |ao|
       next if ao.title.include? "FBA"
-      next if email.include? "chantal@"
-      next if email.include? 'ricky@'
       next if ao.status.downcase.include? "cancelled"
       
-      order = Order.create_from_admin_order(ao)
-      order.create_shipment_from_admin_order(ao)
-      orders_created << order
+      order = Order::create_from_admin_order(ao)
 
+      ao.jobs.each do |aj|
+        job = Job::find_or_create_from_admin_job(order, aj)
+        imprint_methods = job.determine_imprint_methods(aj)
+        
+        imprint_methods.each do |im|
+          Imprint::create_from_job_and_method(job, im)
+        end
+
+        aj.proofs.each do |ap|
+          AdminProof::create_from_admin_job_and_proof(aj, ap) 
+        end
+
+        aj.line_items.each do |li|
+          LineItem::create_from_admin_line_and_job(li,job)
+        end
+      end
+
+      if ao.line_items.where(job_id: nil).count > 0
+        job = Job::find_or_create_by(
+          jobbable_id: order.id,
+          jobbable_type: "Order",
+          name: "No Job Provided",
+          description: "This Line Item has no Job in old Software"
+        )
+
+        ao.line_items.where(job_id: nil).each do |li|
+          LineItem::create_from_admin_line_and_job(li, job)
+        end
+      end
+
+      Payment::find_by_admin_order(ao)
+      Shipment::new_shipment_from_admin_order(ao)
     end
-    total_time = (Time.now - start_time) / 60 
   end
 
   task find_mismatched_orders: :environment do

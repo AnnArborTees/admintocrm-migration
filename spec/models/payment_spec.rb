@@ -14,32 +14,51 @@ describe Payment, type: :model do
     it { is_expected.to validate_presence_of(:order) }
   end
 
-  describe '::find_by_admin_payment(admin_payment)' do
-   
-    let(:admin_payment) { create(:admin_payment, payment_method: "Cash", amount: 300 ) }
+ #describe '::find_by_admin_payment(admin_payment)' do
+ # 
+ #  let(:admin_payment) { create(:admin_payment, payment_method: "Cash", amount: 300 ) }
 
-    context 'given an admin_payment with matching order_id and payment_method "Cash" and amount "300"' do
-      it 'should return a payment with payment_method "Cash" and amount "300"' do
-        payment = Payment::find_by_admin_payment(admin_payment)
-        expect(payment.class).to be(Payment)
-        expect(payment.t_description).to eq(Payment::get_description(admin_payment))
-        expect(payment.store_id).to eq(Store::find_or_create_from_admin_order(admin_payment.order).id)
-        expect(payment.salesperson_id).to eq(User::find_or_create_from_admin_order(admin_payment.order).id)
-        expect(payment.payment_method).to eq(Payment::determine_payment_method(admin_payment))
-        expect(payment.amount).to eq(300)
+ #  context 'given an admin_payment with matching order_id and payment_method "Cash" and amount "300"' do
+ #    it 'should return a payment with payment_method "Cash" and amount "300"' do
+ #      payment = Payment::find_by_admin_payment(admin_payment)
+ #      expect(payment.class).to be(Payment)
+ #      expect(payment.t_description).to eq(Payment::get_description(admin_payment))
+ #      expect(payment.store_id).to eq(Store::find_or_create_from_admin_order(admin_payment.order).id)
+ #      expect(payment.salesperson_id).to eq(User::find_or_create_from_admin_order(admin_payment.order).id)
+ #      expect(payment.payment_method).to eq(Payment::determine_payment_method(admin_payment))
+ #      expect(payment.amount).to eq(300)
+ #    end
+ #  end
+ #end
+  
+  describe '::find_by_admin_order(admin_order)' do
+    let(:admin_order) { create(:admin_order) }
+    let!(:admin_payment) { create(:admin_payment, order_id: admin_order.id) }
+    context 'Given an admin_order with a total' do
+      it 'creates a payment with the same amount as the admin_order total' do
+        payment = Payment::find_by_admin_order(admin_order)
+
+        expect(payment.amount).to eq(admin_order.total)
+      end
+    end
+    context '' do
+      it '' do
       end
     end
   end
 
   #don't know if this is necessary but put it in here anyways
   describe '::get_description' do
-    
-    let(:admin_payment) { create(:admin_payment) }
+   
+   let(:admin_order) { create(:admin_order) }
+   let(:payment) { create(:payment) } 
     
     context 'given an admin_payment with order title "Test" and payment first and last name "Stefan Gale"' do 
-      before { allow(admin_payment.order).to receive(:title) {"Test"} }
       it 'should return  "Test for Stefan Gale"' do
-        expect(Payment::get_description(admin_payment)).to eq("Test for #{admin_payment.order.customer.first_name} #{admin_payment.order.customer.last_name}") 
+        first_name = admin_order.customer.first_name
+        last_name = admin_order.customer.last_name
+        title = admin_order.title
+        expect(Payment::get_description(admin_order)).to eq("#{title} for #{first_name} #{last_name}")
       end
     end
   end

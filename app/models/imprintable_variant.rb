@@ -25,6 +25,22 @@ class ImprintableVariant < ActiveRecord::Base
     "#{self.imprintable.style_catalog_no}"
   end
 
+  def self.find_or_create_from_admin_inventory(inventory)
+    imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
+    color = Color::find_by(name: inventory.color.color)
+    size = Size::find_by(display_value: inventory.size.size)
+
+    if size && color && imprintable
+      return variant = ImprintableVariant::find_by(
+       imprintable_id: imprintable.id,
+       color_id: color.id,
+       size_id: size.id
+      )
+    else
+     return nil
+    end 
+  end
+
   def self.find_by_admin_inventory_id(id)
     inventory = Admin::Inventory.find_by(id: id)
     imprintable = Imprintable::find_by_admin_inventory_id(id)

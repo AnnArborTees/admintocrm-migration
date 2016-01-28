@@ -9,7 +9,11 @@ class AdminProof < ActiveRecord::Base
       file_url: proof.file_path
     )
     admin_proof.thumbnail_url = proof.file_path
-    admin_proof.save
+
+    if admin_proof.new_record?
+      admin_proof.save
+    end
+
     return admin_proof 
   end
 end

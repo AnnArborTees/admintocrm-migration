@@ -43,7 +43,7 @@ class Job < ActiveRecord::Base
     return job
   end
   
-  def determine_imprint_methods
+  def determine_imprint_methods(admin_job)
     imprint_methods = []
     IMPRINT_MAP.each do |key, val|
       if self.name.downcase.include?(key) || self.description.downcase.include?(key)         
@@ -71,28 +71,15 @@ class Job < ActiveRecord::Base
         end
       end
     end
+
+    if imprint_methods.empty?
+      IMPRINT_HASH.each do |key, value|
+        if key == admin_job.id
+          imprint_methods = value.split(",")
+  	end
+      end
+    end
+
     return imprint_methods.uniq
   end
-
-  #come back to this, change it a little bit...maybe?
-  def create_imprints_from_job
-    imprints = []
-    imprint_methods = []
-    imprint_methods = self.determine_imprint_methods
-
-    imprint_methods.each do |imp|
-      imprint = Imprint::create_from_job_and_method(self, imp)
-      imprints << imprint
-    end
-    
-    return imprints.uniq
-  end
 end
-
-
-
-
-
-
-
-

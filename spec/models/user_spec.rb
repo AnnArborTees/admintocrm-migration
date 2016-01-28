@@ -23,24 +23,17 @@ describe User, type: :model do
         expect(new_user.email).to eq(admin_user.email)
         expect(new_user.first_name).to eq(admin_user.first_name)
         expect(new_user.last_name).to eq(admin_user.last_name)      
-        
       end
     end
 
     context 'when order does not have admin with complete data' do 
       
-      before { 
-        allow(admin_user).to receive(:email) { nil } 
-        # admin_user.email = nil =>> same as above
-      }
+      before { allow(admin_user).to receive(:email) { nil } }
 
-      # let(:admin_order) { create(:admin_order, admin: create(:admin_admin, email: nil) ) } 
-      # ****also same as above example**** 
-      it 'does not create a new user' do 
+      it 'does not create a new user' do
         new_user =  User.find_or_create_from_admin_order(admin_order)
         expect(new_user).to be_nil
       end
     end
   end
-  
 end

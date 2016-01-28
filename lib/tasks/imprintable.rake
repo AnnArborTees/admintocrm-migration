@@ -86,31 +86,32 @@ namespace :imprintable do
   end
 
   task create_imprintables: :environment do
-    imprintables_created = []
-    start_time = Time.now
     Admin::InventoryLine.all.each do|line|
       imprintable = Imprintable::find_or_create_from_admin_line(line)
-
-      imprintables_created << imprintable
     end 
-    finish_time = (Time.now - start_time) / 60
-    byebug
   end
 
   task create_variants: :environment do
-    variants_created = []
-    variants_not_created = []
-    start_time = Time.now
-    
     Admin::Inventory.all.each do |ai|
       variant = ImprintableVariant::find_by_admin_inventory_id(ai.id)
-
-      variants_created << variant unless variant.nil?
-      variants_not_created << variant unless variant
     end
-    finish_time = (Time.now - start_time) / 60
-    byebug  
   end
 
+  task create_brands: :environment do
+    Admin::Brand.all.each do |ab|
+      brand = Brand::find_or_create_from_admin_brand_name(ab.name)
+    end
+  end
+  
+  task create_sizes: :environment do
+    Admin::InventorySize.all.each do |as|
+      size = Size::find_or_create_by_admin_size_name(as.size) 
+    end
+  end
 
+  task create_colors: :environment do
+    Admin::InventoryColor.all.each do |ac|
+      color = Color::find_or_create_by_admin_color_name(ac.color)
+    end
+  end
 end
