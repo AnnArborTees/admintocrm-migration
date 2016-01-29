@@ -29,7 +29,7 @@ describe ImprintableVariant, type: :model do
       it "should return an imprintable_variant with [color_name: 'Green', size: 'XL', 
       catalog_no: '2001', brand_name: 'Gildan'" do
      
-        imp_variant = ImprintableVariant::find_by_admin_inventory_id(inventory.id)
+        imp_variant = ImprintableVariant::find_or_create_by_admin_inventory_id(inventory.id)
         expect(imp_variant).to_not be_nil
         expect(imp_variant.get_brand).to eq(inventory.get_brand)
         expect(imp_variant.get_size).to eq(inventory.get_size)
@@ -43,7 +43,7 @@ describe ImprintableVariant, type: :model do
       before{ allow(inventory).to receive(:id) {200}} 
       it "should return nil" do
         inventory
-        imp_variant = ImprintableVariant::find_by_admin_inventory_id(inventory.id)
+        imp_variant = ImprintableVariant::find_or_create_by_admin_inventory_id(inventory.id)
         expect(imp_variant).to be_nil
       end
     end

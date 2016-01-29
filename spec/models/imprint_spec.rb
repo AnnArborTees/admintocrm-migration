@@ -17,7 +17,7 @@ describe Imprint, type: :model do
         job = Job::find_or_create_from_admin_job(order, admin_job)
         imprint_methods = []
         imprints = []
-        imprint_methods = job.determine_imprint_methods
+        imprint_methods = job.determine_imprint_methods(admin_job)
 
         imprint_methods.each do |imp|
           imprint = Imprint::create_from_job_and_method(job, imp)

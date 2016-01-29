@@ -14,9 +14,13 @@ class Imprintable < ActiveRecord::Base
     "#{self.supplier_link}"
   end
   
+  def brand_name
+    "#{brand.name}"
+  end
+  
   def self.find_by_admin_inventory_id(id)
     inventory = Admin::Inventory.eager_load(:brand).find_by(id: id)
-    return self.find_or_create_from_admin_line(inventory.line) unless inventory.nil?
+    return self.find_by_admin_inventory(inventory) unless inventory.nil?
   end
  
   def self.find_by_admin_inventory(inventory)
@@ -48,9 +52,5 @@ class Imprintable < ActiveRecord::Base
     end 
 
     return imprintable
-  end
-
-  def brand_name
-    "#{brand.name}"
   end
 end

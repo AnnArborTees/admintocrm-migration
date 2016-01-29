@@ -3,7 +3,7 @@ require 'csv'
 namespace :order do
   
   task create_crm_orders: :environment do
-    Admin::Order.limit(3000).each do |ao|
+    Admin::Order.all.each do |ao|
       next if ao.title.include? "FBA"
       next if ao.status.downcase.include? "cancelled"
       
@@ -27,6 +27,7 @@ namespace :order do
       end
 
       if ao.line_items.where(job_id: nil).count > 0
+        byebug
         job = Job::find_or_create_by(
           jobbable_id: order.id,
           jobbable_type: "Order",
@@ -67,8 +68,6 @@ namespace :order do
         missing_orders << ao      
       end
     end
-
-    byebug
   end
 
   task create_line_items: :environment do
@@ -121,7 +120,6 @@ namespace :order do
       neg_lines << li
       neg_price_admin_lines << [li.product, li.description, li.quantity, "$#{li.unit_price.to_f}"]
     end
-    byebug
     neg_price_admin_lines.close
   end
 
@@ -138,7 +136,6 @@ namespace :order do
         #next
       end
     end
-    byebug
   end
 
   task create_admin_proofs: :environment do
@@ -178,6 +175,5 @@ namespace :order do
     end
 
     finish_time = (Time.now - start_time) / 60
-    byebug
   end
 end

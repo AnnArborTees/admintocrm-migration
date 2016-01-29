@@ -22,14 +22,6 @@ describe Imprintable, type: :model do
     end
   end
 
-  describe '#brand_name' do
-    context 'Given an imprintable with a brand name Gildan' do
-      it 'brand_name should return Gildan' do
-        expect(imprint.brand_name).to eq("Gildan")
-      end
-    end
-  end
-
   describe '#get_url' do
     let(:imprintable) { create(:imprintable) }
     context 'given an imprintable with a supplier_link of "www.test.com"' do
@@ -45,6 +37,14 @@ describe Imprintable, type: :model do
     end
   end
   
+  describe '#brand_name' do
+    context 'Given an imprintable with a brand name Gildan' do
+      it 'brand_name should return Gildan' do
+        expect(imprint.brand_name).to eq("Gildan")
+      end
+    end
+  end
+
   describe '::find_or_create_from_admin_line(admin_line)' do
     
     let!(:admin_line) { create(:admin_inventory_line) }
@@ -60,17 +60,19 @@ describe Imprintable, type: :model do
       end
     end
   end
- 
-  describe '::find_by_admin_inventory_id(id)' do
+
+describe '::find_by_admin_inventory_id(id)' do
     
-    let(:inventory) { create(:admin_inventory) }
+    let!(:inventory) { create(:admin_inventory) }
     let(:brand) { create(:brand, name: inventory.brand.name) }
-    let(:find_imprintable) { create(:imprintable, brand_id: brand.id, style_catalog_no: inventory.catalog_no) }
+    let(:imprintable2find) { create(:imprintable,
+                               brand_id: brand.id, style_catalog_no: inventory.catalog_no) }
     
     context "given an admin_inventory with data that matches an imprintable" do
-
+      
       it "should return imprintable with data [brand_name: 'Gildan', style_catalog_no: '2001']" do
-        find_imprintable
+        imprintable2find
+        brand
         imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
         expect(imprintable).to_not be_nil
         expect(imprintable.style_name).to eq(inventory.name)
@@ -78,16 +80,14 @@ describe Imprintable, type: :model do
       end
     end
 
-   #context "given an admin_inventory with data that doesn't match an imprintable" do
-   # 
-   #  before { allow(inventory.line.brand).to receive(:name){"Gildan"} }
-
-   #  it "should return nil" do
-   #    find_imprintable
-   #    brand
-   #    imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
-   #    expect(imprintable).to be_nil
-   #  end
-   #end
-  end
+    context "given an admin_inventory with data that doesn't match an imprintable" do
+      
+      let!(:imprint) { create(:imprintable, style_catalog_no: "FB2001") }
+      
+      it "should return nil" do
+        imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
+        expect(imprintable).to be_nil
+      end
+    end
+  end 
 end

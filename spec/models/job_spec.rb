@@ -48,7 +48,7 @@ describe Job, type: :model do
     context "given a .yml file containing filtering data and an admin_job with description containing '1c'" do
       it "should return an array with data from 1c  '[Screen Print,1-C,Front]'" do
         job = Job::find_or_create_from_admin_job(order, admin_job)
-        imprint_methods = job.determine_imprint_methods
+        imprint_methods = job.determine_imprint_methods(admin_job)
         
         expect(job.name).to eq(admin_job.title)
         expect(imprint_methods).to_not be_empty
@@ -94,52 +94,6 @@ describe Job, type: :model do
 
         expect(job.name).to eq("shirt with 2c, 2cb and 3cb")
         expect(imprint_methods).to eq(["Screen Print,2-C,Front", "Screen Print,2-C,Back", "Screen Print,3-C,Back"])
-      end
-    end
-  end
-
-  describe '#create_imprints_from_job' do
-    
-    let(:admin_job) { create(:admin_job, description: "2cf, 2cb") }
-    let(:order) { create(:order) }
-
-    context 'Given an admin_job with description "2cf, 2cb"' do
-      it 'should return imprints of "Screen Print,2 Colors,Front" and "Screen Print,2 Colors,Front"' do
-        job = Job::find_or_create_from_admin_job(order, admin_job)
-        imprint_methods = []
-        imprints = []
-        imprint_methods = job.determine_imprint_methods
-
-        imprint_methods.each do |imp|
-          imprint = Imprint::create_from_job_and_method(job, imp)
-          imprints << imprint
-        end
-
-        expect(imprints).to_not be_nil
-        expect(imprint_methods).to_not be_nil
-        expect(imprints.first.description).to eq(imprint_methods.first)
-        expect(imprints.second.description).to eq(imprint_methods.second)
-      end
-    end
-    context 'Given an admin_job with description "2cf, 2cf"' do
-      
-      before { allow(admin_job).to receive(:description) {"2cf, 2cf"} } 
-
-      it 'should return imprint of "Screen Print,2 Colors,Front"' do
-        job = Job::find_or_create_from_admin_job(order, admin_job)
-        imprint_methods = []
-        imprints = []
-        imprint_methods = job.determine_imprint_methods
-
-        imprint_methods.each do |imp|
-          imprint = Imprint::create_from_job_and_method(job, imp)
-          imprints << imprint
-        end
-
-        expect(imprints).to_not be_nil
-        expect(imprint_methods).to_not be_nil
-        expect(imprints.count).to eq(imprint_methods.count)
-        expect(imprints.first.description).to eq(imprint_methods.first)
       end
     end
   end

@@ -1,6 +1,6 @@
 
 namespace :create do
-# task everything: :environment do
+# task another_everything: :environment do
 #   start_time = Time.now
 #   orders = []
 #   payments_start = Payment::count
@@ -65,7 +65,7 @@ namespace :create do
 #   puts "Payment   #{payments_start}   #{Payment::count}   #{payment_difference}"
 # end
 
-  task another_everything: :environment do
+  task everything: :environment do
    
     start_time = Time.now 
     payments_start = Payment::count
@@ -85,7 +85,7 @@ namespace :create do
     Rake::Task["imprintable:create_sizes"].execute
     Rake::Task["imprintable:create_colors"].execute
     Rake::Task["imprintable:create_imprintables"].execute
-    Rake::Task["order:create_crm_orders"].execute
+    #Rake::Task["order:create_crm_orders"].execute
 
     finish_time = (Time.now - start_time) / 60
     payment_difference = Payment::count - payments_start
@@ -101,19 +101,19 @@ namespace :create do
     imprint_difference = Imprint::count - imprints_start
     admin_proof_difference = AdminProof::count - admin_proofs_start
     
-    puts "Type\tBefore\tAfter\tDifference\n"
-    puts "Order\t#{orders_start}\t#{Order::count}\t#{order_difference}"
-    puts "Job\t#{jobs_start}\t#{Job::count}\t#{job_difference}"
+    puts "Type\t\tBefore\tAfter\tDifference\n"
+    puts "Order\t\t#{orders_start}\t#{Order::count}\t#{order_difference}"
+    puts "Job\t\t#{jobs_start}\t#{Job::count}\t#{job_difference}"
     puts "LineItem\t#{line_items_start}\t#{LineItem::count}\t#{line_item_difference}"
-    puts "Brand\t#{brands_start}\t#{Brand::count}\t#{brand_difference}"
-    puts "Color\t#{colors_start}\t#{Color::count}\t#{color_difference}"
-    puts "Size\t#{sizes_start}\t#{Size::count}\t#{size_difference}"
-    puts "ImpAble\t#{imprintables_start}\t#{Imprintable::count}\t#{imprintable_difference}"
-    puts "Variant\t#{variants_start}\t#{ImprintableVariant::count}\t#{variant_difference}"
-    puts "Payment\t#{payments_start}\t#{Payment::count}\t#{payment_difference}"
+    puts "Brand\t\t#{brands_start}\t#{Brand::count}\t#{brand_difference}"
+    puts "Color\t\t#{colors_start}\t#{Color::count}\t#{color_difference}"
+    puts "Size\t\t#{sizes_start}\t#{Size::count}\t#{size_difference}"
+    puts "ImpAble\t\t#{imprintables_start}\t#{Imprintable::count}\t#{imprintable_difference}"
+    puts "Variant\t\t#{variants_start}\t#{ImprintableVariant::count}\t#{variant_difference}"
+    puts "Payment\t\t#{payments_start}\t#{Payment::count}\t#{payment_difference}"
     puts "Shipment\t#{shipments_start}\t#{Shipment::count}\t#{shipment_difference}"
-    puts "Imprint\t#{imprints_start}\t#{Imprint::count}\t#{imprint_difference}"
-    puts "AdProof\t#{admin_proofs_start}\t#{AdminProof::count}\t#{admin_proof_difference}"
+    puts "Imprint\t\t#{imprints_start}\t#{Imprint::count}\t#{imprint_difference}"
+    puts "AdProof\t\t#{admin_proofs_start}\t#{AdminProof::count}\t#{admin_proof_difference}"
 
     byebug
   end

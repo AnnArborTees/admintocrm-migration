@@ -25,27 +25,11 @@ class ImprintableVariant < ActiveRecord::Base
     "#{self.imprintable.style_catalog_no}"
   end
 
-  def self.find_or_create_from_admin_inventory(inventory)
-    imprintable = Imprintable::find_by_admin_inventory_id(inventory.id)
-    color = Color::find_by(name: inventory.color.color)
-    size = Size::find_by(display_value: inventory.size.size)
-
-    if size && color && imprintable
-      return variant = ImprintableVariant::find_by(
-       imprintable_id: imprintable.id,
-       color_id: color.id,
-       size_id: size.id
-      )
-    else
-     return nil
-    end 
-  end
-
-  def self.find_by_admin_inventory_id(id)
-    inventory = Admin::Inventory.find_by(id: id)
+  def self.find_or_create_by_admin_inventory_id(id)
+    inventory = Admin::Inventory::find_by(id: id)
     imprintable = Imprintable::find_by_admin_inventory_id(id)
-    color = Color::find_or_create_by_admin_color_name(inventory.color.color) unless inventory.nil?
-    size = Size::find_or_create_by_admin_size_name(inventory.size.size) unless inventory.nil?
+    color = Color::find_by(name: inventory.color.color) unless inventory.nil?
+    size = Size::find_by(display_value: inventory.size.size) unless inventory.nil?
     
     if size && imprintable && color
       variant = self.find_or_initialize_by(
@@ -53,6 +37,7 @@ class ImprintableVariant < ActiveRecord::Base
         color_id: color.id,
         size_id: size.id
         )
+
       if variant.new_record?
         variant.save
       end

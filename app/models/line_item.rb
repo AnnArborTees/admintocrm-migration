@@ -10,14 +10,6 @@ class LineItem < ActiveRecord::Base
   validates :unit_price, presence: true
   validates :decoration_price, presence: true
 
-  def determine_subtotal
-    return sprintf('%.2f',((self.quantity * self.unit_price).to_f)).to_f
-  end
-
-  def determine_tax(subtotal)
-    return self.taxable ? sprintf('%.2f', (subtotal * 0.06)).to_f : 0
-  end
-  
   def self.create_from_admin_line_and_job(admin_item, job)
     line = self.find_or_initialize_by(self.params_from_admin_item_and_job(admin_item, job))
     
@@ -30,7 +22,8 @@ class LineItem < ActiveRecord::Base
 
   def self.params_from_admin_item_and_job(admin_item, job)
     imprintable = Imprintable::find_by_admin_inventory_id(admin_item.inventory_id)
-    variant = ImprintableVariant::find_by_admin_inventory_id(admin_item.inventory_id) unless imprintable.nil?
+    variant = 
+      ImprintableVariant::find_or_create_by_admin_inventory_id(admin_item.inventory_id) unless imprintable.nil?
     {
       name: admin_item.product,
       quantity: admin_item.quantity,
@@ -39,12 +32,13 @@ class LineItem < ActiveRecord::Base
       unit_price: admin_item.unit_price,
       decoration_price: admin_item.unit_price,
       imprintable_price: 0.00,
-      line_itemable_id: admin_item.job_id.nil? ? Order::find_by(id: admin_item.order_id).id : job.id,
+      line_itemable_id: job.id, 
       line_itemable_type: admin_item.job_id.nil? ? "Order" : "Job",
       url: imprintable.nil? ? nil : imprintable.supplier_link, 
-      imprintable_object_id: admin_item.inventory_id.nil? ? 
-        nil : variant.id, 
-      imprintable_object_type: admin_item.inventory_id.nil? ? "Imprintable" : "Imprintable Variant"
+      imprintable_object_id: variant.nil? ?
+        (imprintable.nil? ? nil : imprintable.id) : variant.id, 
+      imprintable_object_type: variant.nil? ?
+        (imprintable.nil? ? nil : "Imprintable") : "Imprintable Variant" 
     }
   end
 end

@@ -91,12 +91,6 @@ namespace :imprintable do
     end 
   end
 
-  task create_variants: :environment do
-    Admin::Inventory.all.each do |ai|
-      variant = ImprintableVariant::find_by_admin_inventory_id(ai.id)
-    end
-  end
-
   task create_brands: :environment do
     Admin::Brand.all.each do |ab|
       brand = Brand::find_or_create_from_admin_brand_name(ab.name)
