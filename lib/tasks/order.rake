@@ -3,7 +3,7 @@ require 'csv'
 namespace :order do
   
   task create_crm_orders: :environment do
-    Admin::Order.all.each do |ao|
+    Admin::Order.limit(4000).each do |ao|
       next if ao.title.include? "FBA"
       next if ao.status.downcase.include? "cancelled"
       

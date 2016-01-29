@@ -85,7 +85,7 @@ namespace :create do
     Rake::Task["imprintable:create_sizes"].execute
     Rake::Task["imprintable:create_colors"].execute
     Rake::Task["imprintable:create_imprintables"].execute
-    #Rake::Task["order:create_crm_orders"].execute
+    Rake::Task["order:create_crm_orders"].execute
 
     finish_time = (Time.now - start_time) / 60
     payment_difference = Payment::count - payments_start
