@@ -30,7 +30,7 @@ class Job < ActiveRecord::Base
     end
 
     if aj.description.nil? || aj.description.blank?
-      aj.description = "no description from admin job"
+      aj.description = "No description from Admin Job"
     end
     
     job = self.find_or_create_by(
