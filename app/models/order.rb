@@ -17,16 +17,18 @@ class Order < ActiveRecord::Base
   validates :salesperson, presence: true
   validates :name, presence: true
 
-  def self.create_from_admin_order_alternative(admin_order)
-    if order = Order.find_by(id: admin_order.id)
-      order.update(self.params_from_admin_order(admin_order))
-    else
-      self.create(self.params_from_admin_order(admin_order))
-    end
-  end
+  # def self.create_from_admin_order_alternative(admin_order)
+  #   order = Order.find_by(id: crm_order_id_from_admin_order(admin_order))
+  #
+  #   if order
+  #     order.update(self.params_from_admin_order(admin_order))
+  #   else
+  #     self.create(self.params_from_admin_order(admin_order))
+  #   end
+  # end
 
   def self.create_from_admin_order(admin_order)
-    order = self.find_or_initialize_by(id: admin_order.id)
+    order = self.find_or_initialize_by(id: admin_order.crm_order_id)
     order.valid? ? order.imported_from_admin = false : order.imported_from_admin = true
     order.name = admin_order.title
     order.firstname = admin_order.customer.first_name
@@ -37,25 +39,36 @@ class Order < ActiveRecord::Base
     order.delivery_method = self.get_ship_method_from_admin_order(admin_order)
     order.store_id = Store.find_or_create_from_admin_order(admin_order).id
     order.salesperson_id = User.find_or_create_from_admin_order(admin_order).id
+    order.imported_from_admin = true,
+    order.artwork_state = :in_production
+    order.invoice_state = :approved
+    order.production_state = :complete
+    order.notification_state = :picked_up
+    order.phone_number = admin_order.crm_phone_number
     order.save
-
     return order
   end
-
-  def self.params_from_admin_order(admin_order)
-    {
-      id: admin_order.id,
-      name: admin_order.title,
-      firstname: admin_order.customer.first_name,
-      lastname: admin_order.customer.last_name,
-      email: admin_order.customer.email,
-      in_hand_by: admin_order.delivery_deadline,
-      terms: self.get_terms_from_admin_order(admin_order),
-      delivery_method: self.get_ship_method_from_admin_order(admin_order),
-      store_id: Store.find_or_create_from_admin_order(admin_order).id,
-      salesperson_id: User.find_or_create_from_admin_order(admin_order).id
-    }
-  end
+  #
+  # def self.params_from_admin_order(admin_order)
+  #   {
+  #     id: admin_order.id,
+  #     name: admin_order.title,
+  #     firstname: admin_order.customer.first_name,
+  #     lastname: admin_order.customer.last_name,
+  #     email: admin_order.customer.email,
+  #     in_hand_by: admin_order.delivery_deadline,
+  #     terms: self.get_terms_from_admin_order(admin_order),
+  #     delivery_method: self.get_ship_method_from_admin_order(admin_order),
+  #     store_id: Store.find_or_create_from_admin_order(admin_order).id,
+  #     salesperson_id: User.find_or_create_from_admin_order(admin_order).id,
+  #     imported_from_admin: true,
+  #     artwork_state: :in_production,
+  #     invoice_state: :approved,
+  #     production_state: :complete,
+  #     notification_state: :picked_up,
+  #     phone_number: admin_order.crm_phone_number
+  #   }
+  # end
 
   def self.get_terms_from_admin_order(admin_order)
     case admin_order.terms
@@ -98,8 +111,4 @@ class Order < ActiveRecord::Base
     return line_item
   end
 
-  def crm_order_id_from_admin_order(ao)
-    return ao.id if (ao.id < 60000)
-    ao.id % 60000 + 65000
-  end
 end

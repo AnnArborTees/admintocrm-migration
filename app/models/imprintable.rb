@@ -13,16 +13,16 @@ class Imprintable < ActiveRecord::Base
   def get_url
     "#{self.supplier_link}"
   end
-  
+
   def brand_name
     "#{brand.name}"
   end
-  
+
   def self.find_by_admin_inventory_id(id)
-    inventory = Admin::Inventory.eager_load(:brand).find_by(id: id)
+    inventory = Admin::Inventory.find_by(id: id)
     return self.find_by_admin_inventory(inventory) unless inventory.nil?
   end
- 
+
   def self.find_by_admin_inventory(inventory)
     if (brand = Brand::find_by(name: inventory.brand.name))
       return imprintable = Imprintable::find_by(
@@ -49,7 +49,7 @@ class Imprintable < ActiveRecord::Base
       imprintable.xxxxxxl_upcharge = 0.00
       imprintable.retail = false
       imprintable.save
-    end 
+    end
 
     return imprintable
   end

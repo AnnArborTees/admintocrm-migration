@@ -1,6 +1,6 @@
 class LineItem < ActiveRecord::Base
   has_one :order, through: :job, foreign_key: :jobbable_id
-  belongs_to :job, foreign_key: :line_itemable_id
+  belongs_to :job
   belongs_to :imprintable_variant, foreign_key: :imprintable_object_id
 
   validates :job, presence: true
@@ -12,17 +12,17 @@ class LineItem < ActiveRecord::Base
 
   def self.create_from_admin_line_and_job(admin_item, job)
     line = self.find_or_initialize_by(self.params_from_admin_item_and_job(admin_item, job))
-    
+
     if line.new_record?
       line.save
     end
-    
-    return line 
+
+    return line
   end
 
   def self.params_from_admin_item_and_job(admin_item, job)
     imprintable = Imprintable::find_by_admin_inventory_id(admin_item.inventory_id)
-    variant = 
+    variant =
       ImprintableVariant::find_or_create_by_admin_inventory_id(admin_item.inventory_id) unless imprintable.nil?
     {
       name: admin_item.product,
@@ -32,13 +32,12 @@ class LineItem < ActiveRecord::Base
       unit_price: admin_item.unit_price,
       decoration_price: admin_item.unit_price,
       imprintable_price: 0.00,
-      line_itemable_id: job.id, 
-      line_itemable_type: admin_item.job_id.nil? ? "Order" : "Job",
-      url: imprintable.nil? ? nil : imprintable.supplier_link, 
+      job_id: job.id,
+      url: imprintable.nil? ? nil : imprintable.supplier_link,
       imprintable_object_id: variant.nil? ?
-        (imprintable.nil? ? nil : imprintable.id) : variant.id, 
+        (imprintable.nil? ? nil : imprintable.id) : variant.id,
       imprintable_object_type: variant.nil? ?
-        (imprintable.nil? ? nil : "Imprintable") : "Imprintable Variant" 
+        (imprintable.nil? ? nil : "Imprintable") : "Imprintable Variant"
     }
   end
 end

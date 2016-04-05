@@ -1,9 +1,9 @@
 module ImprintMethodHelper
-  
+
   def determine_digital_type(key, imprint_methods)
     name = self.name.downcase
-    desc = self.description.downcase 
-    
+    desc = self.description.downcase
+
     if imprint_methods.empty? == false
       return
     end
@@ -19,7 +19,7 @@ module ImprintMethodHelper
     end
   end
 
-  def determine_DTG_variant(key, imprint_methods)
+  def determine_dtg_variant(key, imprint_methods)
     #if key isn't dtg, as in 381/782/541 send it here
     #then it changes key to dtg, as there is a dtg
     #associated with the original key that sent it here
@@ -29,14 +29,14 @@ module ImprintMethodHelper
 
     name = self.name.downcase
     desc = self.description.downcase
-    
+
     num_782 = name.scan('782').size + desc.scan('782').size
     num_381 = name.scan('381').size + desc.scan('381').size
     num_541 = name.scan('541').size + desc.scan('541').size
 
     #all possible matches of dtg
     #if 782, 381 or 541 has been found, it runs through this statement
-    if(num_782 > 0 || num_381 > 0 || num_541 > 0)  
+    if(num_782 > 0 || num_381 > 0 || num_541 > 0)
       if num_782 > 0
         if name.include?("782 front and back") || name.include?("782 f/b") || name.include?("f+b 782") || name.include?("front and back")
           imprint_methods << IMPRINT_MAP[key + "wfb"]
@@ -57,10 +57,10 @@ module ImprintMethodHelper
         elsif name.include?("381 b") || desc.include?("381 b")
           imprint_methods << IMPRINT_MAP[key + "wb"]
         else
-          imprint_methods << IMPRINT_MAP[key + "w"] 
+          imprint_methods << IMPRINT_MAP[key + "w"]
         end
       end
-    
+
       if num_541 > 0
         if(name.include?("541 f/b") || name.include?("541 f+b") || name.include?("541 front and back") || (name.include?("front") && name.include?("back")) || name.include?("f+b"))
           imprint_methods << IMPRINT_MAP[key + "fb"]
@@ -102,14 +102,14 @@ module ImprintMethodHelper
     num_key = name.scan(key).size + desc.scan(key).size#straight #c or straight #s
 
     num_total_keys = num_keyB + num_keyS + num_keyRS + num_keyLS + num_keyF
-    
+
     #special case
     if name.include?("1cside") || desc.include?("1cside")
       return
     end
 
     if(((num_total_keys > num_key) && num_keyF == 0) || (num_key > num_total_keys))
-      imprint_methods << IMPRINT_MAP[key] 
+      imprint_methods << IMPRINT_MAP[key]
     else
       return
     end

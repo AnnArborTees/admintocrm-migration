@@ -1,7 +1,8 @@
 class Admin::Order < ActiveRecord::Base
   establish_connection Admin::database_name
 
-  default_scope { where(type: "customOrder") }
+  default_scope { where(type: "customOrder").
+    where.not(status: %w(Cancelled Garment\ Hold Incomplete Pending quoted)) }
   self.inheritance_column = :_type_disabled
 
   belongs_to :customer, class_name: 'Admin::Customer', foreign_key: :customer_id
@@ -13,4 +14,18 @@ class Admin::Order < ActiveRecord::Base
   validates :customer_id, presence: true
   validates :administrator_id, presence: true
   validates :type, presence: true
+
+
+  def crm_order_id
+    return id if (id < 60000)
+    id % 60000 + 65000
+  end
+
+  def crm_phone_number(options = {})
+    return '000-000-0000'  if customer.phone_number.blank?
+    options = options.symbolize_keys
+
+    parse_float(customer.phone_number, true) if options.delete(:raise)
+    ERB::Util.html_escape(ActiveSupport::NumberHelper.number_to_phone(number, options))
+  end
 end

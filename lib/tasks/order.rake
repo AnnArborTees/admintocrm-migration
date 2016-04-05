@@ -2,16 +2,21 @@ require 'csv'
 
 namespace :order do
 
-  task create_crm_orders: :environment do
-    Admin::Order.all.each do |ao|
+  task :create_crm_orders, [:year] => :environment do |t, args|
+    abort("Please enter a year in the format YYYY") if args.year.nil?
+
+    Admin::Order.where("created_at like '#{args.year}%'").each do |ao|
+
       next if ao.title.include? "FBA"
       next if ao.status.downcase.include? "cancelled"
+      next if Order.exists?(id: ao.crm_order_id, imported_from_admin: false)
 
       order = Order::create_from_admin_order(ao)
 
       ao.jobs.each do |aj|
         job = Job::find_or_create_from_admin_job(order, aj)
         imprint_methods = job.determine_imprint_methods(aj)
+        byebug
 
         imprint_methods.each do |im|
           Imprint::create_from_job_and_method(job, im)
@@ -41,7 +46,12 @@ namespace :order do
 
       Payment::find_by_admin_order(ao)
       Shipment::new_shipment_from_admin_order(ao)
+      order.update_attribute(:artwork_state, :in_production)
+      order.update_attribute(:notification_state, :picked_up)
+      order.update_attribute(:invoice_state, :approved)
+      order.update_attribute(:production_state, :complete)
 
+      puts "#{order.id}"
     end
   end
 
