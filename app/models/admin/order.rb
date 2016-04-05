@@ -1,4 +1,5 @@
 class Admin::Order < ActiveRecord::Base
+  establish_connection Admin::database_name
 
   default_scope { where(type: "customOrder") }
   self.inheritance_column = :_type_disabled

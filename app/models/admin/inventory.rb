@@ -1,4 +1,6 @@
 class Admin::Inventory < ActiveRecord::Base
+  establish_connection Admin::database_name
+
   belongs_to :size, class_name: "Admin::InventorySize", foreign_key: :inventory_size_id
   belongs_to :line, class_name: "Admin::InventoryLine", foreign_key: :inventory_line_id
   belongs_to :color, class_name: "Admin::InventoryColor", foreign_key: :inventory_color_id
@@ -12,11 +14,11 @@ class Admin::Inventory < ActiveRecord::Base
   def get_brand
     "#{line.brand.name}"
   end
-  
+
   def get_color
     "#{color.color}"
-  end 
-  
+  end
+
   def get_size
     "#{size.size}"
   end

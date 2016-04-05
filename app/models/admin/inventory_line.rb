@@ -1,4 +1,6 @@
 class Admin::InventoryLine < ActiveRecord::Base
+  establish_connection Admin::database_name
+
   has_many :inventories, class_name: "Admin::Inventory"
   belongs_to :brand, class_name: "Admin::Brand", foreign_key: :brand_id
 

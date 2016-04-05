@@ -4,7 +4,7 @@ module UseAdminDatabase
   extend ActiveSupport::Concern
 
   included do
-    establish_connection configurations['mysql'][ [Rails.env, "_admin"].join('_') ]
+    establish_connection Rails.configuration.database_configuration[ [Rails.env, "admin"].join('_') ]
   end
 
 end
