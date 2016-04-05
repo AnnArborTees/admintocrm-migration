@@ -16,13 +16,13 @@ class Order < ActiveRecord::Base
   validates :store, presence: true
   validates :salesperson, presence: true
   validates :name, presence: true
-  
+
   def self.create_from_admin_order_alternative(admin_order)
     if order = Order.find_by(id: admin_order.id)
       order.update(self.params_from_admin_order(admin_order))
     else
       self.create(self.params_from_admin_order(admin_order))
-    end 
+    end
   end
 
   def self.create_from_admin_order(admin_order)
@@ -43,7 +43,7 @@ class Order < ActiveRecord::Base
   end
 
   def self.params_from_admin_order(admin_order)
-    { 
+    {
       id: admin_order.id,
       name: admin_order.title,
       firstname: admin_order.customer.first_name,
@@ -55,7 +55,7 @@ class Order < ActiveRecord::Base
       store_id: Store.find_or_create_from_admin_order(admin_order).id,
       salesperson_id: User.find_or_create_from_admin_order(admin_order).id
     }
-  end 
+  end
 
   def self.get_terms_from_admin_order(admin_order)
     case admin_order.terms
@@ -65,7 +65,7 @@ class Order < ActiveRecord::Base
       return "Net 30"
     when "paid_on_pickup"
       return "Paid in full on pick up"
-    else  
+    else
       return "Paid in full on purchase"
     end
   end
@@ -96,5 +96,10 @@ class Order < ActiveRecord::Base
     line_item = LineItem::create_from_admin_line_and_job(admin_line, job)
     line_items << line_item unless line_item.nil?
     return line_item
+  end
+
+  def crm_order_id_from_admin_order(ao)
+    return ao.id if (ao.id < 60000)
+    ao.id % 60000 + 65000
   end
 end

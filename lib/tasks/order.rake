@@ -1,24 +1,24 @@
 require 'csv'
 
 namespace :order do
-  
+
   task create_crm_orders: :environment do
     Admin::Order.all.each do |ao|
       next if ao.title.include? "FBA"
       next if ao.status.downcase.include? "cancelled"
-      
+
       order = Order::create_from_admin_order(ao)
 
       ao.jobs.each do |aj|
         job = Job::find_or_create_from_admin_job(order, aj)
         imprint_methods = job.determine_imprint_methods(aj)
-        
+
         imprint_methods.each do |im|
           Imprint::create_from_job_and_method(job, im)
         end
 
         aj.proofs.each do |ap|
-          AdminProof::create_from_admin_job_and_proof(aj, ap) 
+          AdminProof::create_from_admin_job_and_proof(aj, ap)
         end
 
         aj.line_items.each do |li|
