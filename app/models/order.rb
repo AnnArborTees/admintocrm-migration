@@ -39,7 +39,7 @@ class Order < ActiveRecord::Base
     order.delivery_method = self.get_ship_method_from_admin_order(admin_order)
     order.store_id = Store.find_or_create_from_admin_order(admin_order).id
     order.salesperson_id = User.find_or_create_from_admin_order(admin_order).id
-    order.imported_from_admin = true,
+    order.imported_from_admin = true
     order.artwork_state = :in_production
     order.invoice_state = :approved
     order.production_state = :complete

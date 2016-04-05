@@ -26,6 +26,6 @@ class Admin::Order < ActiveRecord::Base
     options = options.symbolize_keys
 
     parse_float(customer.phone_number, true) if options.delete(:raise)
-    ERB::Util.html_escape(ActiveSupport::NumberHelper.number_to_phone(number, options))
+    ERB::Util.html_escape(ActiveSupport::NumberHelper.number_to_phone( customer.phone_number, options))
   end
 end

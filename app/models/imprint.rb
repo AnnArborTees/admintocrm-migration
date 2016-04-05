@@ -5,10 +5,11 @@ class Imprint < ActiveRecord::Base
 
   validates :job, presence: true
 
-  def self.create_from_job_and_method(job, imprint_method)
+  def self.create_from_job_and_method(job, description)
     imprint = Imprint::find_or_initialize_by(
       job_id: job.id,
-      description: imprint_method
+      description: description,
+      print_location_id: PRINT_LOCATION_MAP[description]
     )
 
     if imprint.new_record?
@@ -17,4 +18,15 @@ class Imprint < ActiveRecord::Base
 
     return imprint
   end
+
+
+
+
+  # 4 Screen Print  Full Chest
+  # 16  Screen Print  Full Back
+  # 5 Screen Print  Left Chest
+  #
+
+
+
 end

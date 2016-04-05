@@ -5,6 +5,13 @@ namespace :order do
   task :create_crm_orders, [:year] => :environment do |t, args|
     abort("Please enter a year in the format YYYY") if args.year.nil?
 
+    unmappable = {}
+    CSV.foreach( Rails.root.join("Imprintables Not Found", "UnmappableImprints#{args.year}.csv"), headers: true) do |row|
+      key = row['Job Name']
+      key = key.gsub("\n",'') unless key.nil?
+      unmappable[key] = row['Print Description']
+    end
+
     Admin::Order.where("created_at like '#{args.year}%'").each do |ao|
 
       next if ao.title.include? "FBA"
@@ -15,15 +22,14 @@ namespace :order do
 
       ao.jobs.each do |aj|
         job = Job::find_or_create_from_admin_job(order, aj)
-        imprint_methods = job.determine_imprint_methods(aj)
-        byebug
+        imprint_methods = job.determine_imprint_methods(aj, unmappable)
 
         imprint_methods.each do |im|
           Imprint::create_from_job_and_method(job, im)
         end
 
         aj.proofs.each do |ap|
-          AdminProof::create_from_admin_job_and_proof(aj, ap)
+          AdminProof::create_from_order_id_and_proof(order.id, ap)
         end
 
         aj.line_items.each do |li|

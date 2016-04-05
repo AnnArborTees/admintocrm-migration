@@ -43,7 +43,7 @@ class Job < ActiveRecord::Base
     return job
   end
 
-  def determine_imprint_methods(admin_job)
+  def determine_imprint_methods(admin_job, unmappable)
     imprint_methods = []
     IMPRINT_MAP.each do |key, val|
       if self.name.downcase.include?(key) || self.description.downcase.include?(key)
@@ -56,7 +56,7 @@ class Job < ActiveRecord::Base
         #skips dtgw/wf/etc and waits for dtg key to prevent overlap
         next if (key.include?("dtg") && key != "dtg")
 
-        if key == "emb"#special emb case where they don't want embroidery
+        if key == "emb" #special emb case where they don't want embroidery
           next if self.name.downcase.include?("no emb") || self.description.downcase.include?("no emb")
         end
 
@@ -73,11 +73,12 @@ class Job < ActiveRecord::Base
     end
 
     if imprint_methods.empty?
-      IMPRINT_HASH.each do |key, value|
-        if key == admin_job.id
-          imprint_methods = value.split(",")
-  	end
-      end
+      key = admin_job.title.gsub("\n", "")
+      imprint_description = unmappable[key]
+      puts admin_job.title if imprint_description.blank?
+      return ["#{admin_job.title}"] if imprint_description.blank?
+      imprint_strings = imprint_description.gsub(", ", ",").split(",")
+      imprint_strings.each{|x| imprint_methods << IMPRINT_MAP[x] unless IMPRINT_MAP[x].blank? }
     end
 
     return imprint_methods.uniq
