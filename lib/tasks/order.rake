@@ -27,8 +27,6 @@ namespace :order do
       end
 
       if ao.line_items.where(job_id: nil).count > 0
-        #never gets here?
-        byebug
         job = Job::find_or_create_by(
           jobbable_id: order.id,
           jobbable_type: "Order",

@@ -1,31 +1,31 @@
 require 'csv'
 
 namespace :job do
-  task imprint_method_finder_test: :environment do 
+  task imprint_method_finder_test: :environment do
 
     years = ["2011", "2012", "2013", "2014", "2015"]
 
     years.each do |y|
-      
+
       success, failure = 0, 0
       total = 0
       success_percent = 0.0
-    
+
       failures = CSV.open([Rails.root, "unmappable_#{y.to_i}.csv"].join('/'), 'w', {col_sep: "\t"})
       successes = CSV.open([Rails.root, "mappable_#{y.to_i}.csv"].join('/'), 'w', {col_sep: "\t"})
-      failures << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Proof Image URL'] 
+      failures << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Proof Image URL']
       successes << ['Order ID', 'Job ID', 'Job Name', 'Job Description', 'Imprints']
       #blank line between headers and info
       failures << []
       successes << []
 
       Admin::Job.joins(:order).where("created_at > '#{y.to_i}' && created_at < '#{y.to_i + 1}'").each do |aj|
-  	next if aj.order.title.include? "FBA" 
+  	next if aj.order.title.include? "FBA"
   	job = Job.new_job_from_admin_job(aj)
-  	  
+
   	imprint_methods = job.determine_imprint_methods(aj)
   	file_paths = aj.proofs.map{|f| f.file_path}
-        
+
   	if imprint_methods.empty?
   	  failure +=1
   	  failures << [aj.custom_order_id, aj.id, aj.title.gsub(',', ' ').strip, aj.description.gsub(',', ' ').strip,] + file_paths
@@ -34,17 +34,17 @@ namespace :job do
           imprint_methods.each do |imp|
             imp.gsub!(",", " ")
           end
-  	  
+
           successes << [aj.custom_order_id, aj.id, aj.title.gsub(',', ' ').strip, aj.description.gsub(',', ' ').strip,] + imprint_methods
   	  success += 1
         end
-          
+
   	total +=1
       end
-  	
+
       success_percent = ((1.0 * success) / (1.0 * total)) * 100.00
 
-      failures.close 
+      failures.close
       successes.close
       puts "Success: #{success}, Failure: #{failure} Success Rate: #{ success_percent.round(2) }%"
       puts "\nTotal jobs: #{total}"
@@ -58,9 +58,9 @@ namespace :job do
 
     Admin::Order.all.each do |ao|
       email = ao.admin.email
-      
+
       next if ao.title.include? "FBA"
-      next if ao.status.downcase.include? "cancelled" 
+      next if ao.status.downcase.include? "cancelled"
       order = Order::create_from_admin_order(ao)
 
       ao.jobs.each do |aj|
@@ -76,11 +76,11 @@ namespace :job do
     finish_time = (Time.now - start_time) / 60
     imprints_end = Imprint::count
     difference = imprints_end - imprints_start
-    byebug
+
   end
 
   task create_admin_proofs: :environment do
-     
+
   end
 
   task find_mismatched_brands: :environment do
@@ -108,7 +108,7 @@ namespace :job do
   task find_jobs_with_no_proofs: :environment do
     start_time = Time.now
     no_proofs = []
-    
+
     Admin::Order.all.each do |ao|
       ao.jobs.each do |aj|
         next if aj.proofs.count > 0
@@ -118,6 +118,6 @@ namespace :job do
     end
 
     finish_time = (Time.now - start_time) / 60
-    byebug
+
   end
 end

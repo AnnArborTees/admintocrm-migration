@@ -1,7 +1,7 @@
 require 'csv'
 
 namespace :imprintable do
-  
+
   task variants_not_created: :environment do
     inventories_not_variants = []
 
@@ -10,7 +10,7 @@ namespace :imprintable do
     variants_not_found = CSV.open([Rails.root, "variants_not_found_from_inventories.csv"].join('/'), 'w', {col_sep: "\t"})
 
     variants_not_found << ["Brand ID", "Brand Name", "Style Cat No.", "Color", "Size", "Reason Not Variant"]
-    variants_not_found << [] 
+    variants_not_found << []
     Admin::Inventory.all.each do |ai|
 
       imprintable_not_found = false
@@ -21,7 +21,7 @@ namespace :imprintable do
       imprintable = Imprintable::find_by_admin_inventory_id(ai.id)
       imprintable_not_found = true unless imprintable
       color = Color::find_by_admin_color(ai.color)
-      color_not_found = true unless color 
+      color_not_found = true unless color
       size = Size::find_by_admin_size(ai.size)
       size_not_found = true unless size
 
@@ -60,9 +60,9 @@ namespace :imprintable do
           end
         end
       end
-        
-      inventories_not_variants << ai unless variant       
-      variants_not_found << [ai.line.brand.id, ai.line.brand.name, ai.line.catalog_number,ai.color.color, ai.size.size, reason] unless variant 
+
+      inventories_not_variants << ai unless variant
+      variants_not_found << [ai.line.brand.id, ai.line.brand.name, ai.line.catalog_number,ai.color.color, ai.size.size, reason] unless variant
     end
     finish_time = (Time.now - start_time) / 60
     variants_not_found.close
@@ -77,18 +77,18 @@ namespace :imprintable do
         next
       else
         inventory = Admin::Inventory.find_by(id: al.inventory_id)
-        
-        missing_inventories << al unless inventory 
+
+        missing_inventories << al unless inventory
       end
     end
     finish_time = (Time.now - start_time) / 60
-    byebug
+
   end
 
   task create_imprintables: :environment do
     Admin::InventoryLine.all.each do|line|
       imprintable = Imprintable::find_or_create_from_admin_line(line)
-    end 
+    end
   end
 
   task create_brands: :environment do
@@ -96,10 +96,10 @@ namespace :imprintable do
       brand = Brand::find_or_create_from_admin_brand_name(ab.name)
     end
   end
-  
+
   task create_sizes: :environment do
     Admin::InventorySize.all.each do |as|
-      size = Size::find_or_create_by_admin_size_name(as.size) 
+      size = Size::find_or_create_by_admin_size_name(as.size)
     end
   end
 

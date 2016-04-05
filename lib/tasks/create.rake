@@ -2,8 +2,8 @@
 namespace :create do
 
   task everything: :environment do
-   
-    start_time = Time.now 
+
+    start_time = Time.now
     payments_start = Payment::count
     imprintables_start = Imprintable::count
     variants_start = ImprintableVariant::count
@@ -16,7 +16,7 @@ namespace :create do
     shipments_start = Shipment::count
     admin_proofs_start = AdminProof::count
     imprints_start = Imprint::count
-    
+
     Rake::Task["imprintable:create_brands"].execute
     Rake::Task["imprintable:create_sizes"].execute
     Rake::Task["imprintable:create_colors"].execute
@@ -36,7 +36,7 @@ namespace :create do
     shipment_difference = Shipment::count - shipments_start
     imprint_difference = Imprint::count - imprints_start
     admin_proof_difference = AdminProof::count - admin_proofs_start
-    
+
     puts "Type\t\tBefore\tAfter\tDifference\n"
     puts "Order\t\t#{orders_start}\t#{Order::count}\t#{order_difference}"
     puts "Job\t\t#{jobs_start}\t#{Job::count}\t#{job_difference}"
@@ -51,6 +51,6 @@ namespace :create do
     puts "Imprint\t\t#{imprints_start}\t#{Imprint::count}\t#{imprint_difference}"
     puts "AdProof\t\t#{admin_proofs_start}\t#{AdminProof::count}\t#{admin_proof_difference}"
 
-    byebug
+
   end
-end 
+end
