@@ -10,11 +10,12 @@ class Brand < ActiveRecord::Base
     self.name << last_char
     self.name << 'ay'
     self.name = self.name.capitalize
-  end 
+  end
 
   def self.find_or_create_from_admin_brand_name(ab_name)
     brand = Brand.find_or_create_by(name: ab_name)
     brand.save
     return brand
   end
+
 end

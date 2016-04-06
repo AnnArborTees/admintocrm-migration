@@ -33,7 +33,8 @@ namespace :order do
         end
 
         aj.line_items.each do |li|
-          LineItem::create_from_admin_line_and_job(li,job)
+          LineItem.where(id: order.line_items.map(&:id)).destroy_all
+          LineItem::create_from_admin_line_and_job(li, job)
         end
       end
 

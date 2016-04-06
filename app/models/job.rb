@@ -39,6 +39,7 @@ class Job < ActiveRecord::Base
     )
     job.jobbable_id = order.id
     job.jobbable_type = "Order"
+    job.collapsed = false
     job.save
     return job
   end

@@ -9,6 +9,20 @@ class ImprintableVariant < ActiveRecord::Base
   validates :size, presence: true
   validates :color, presence: true
 
+  def self.find_or_create_by_admin_inventory(admin_inventory)
+    imprintable =  Imprintable.find_or_create_by_admin_inventory(admin_inventory)
+    color = Color.find_or_create_by_name(admin_inventory.color.color)
+    size = Size.find_or_create_by_admin_size(admin_inventory.size)
+    ImprintableVariant.find_or_create_by(
+                        imprintable_id: imprintable.id,
+                        color_id: color.id,
+                        size_id: size.id,
+                        deleted_at: nil
+    )
+  end
+
+
+
   def get_brand
     "#{imprintable.brand.name}"
   end
@@ -30,7 +44,7 @@ class ImprintableVariant < ActiveRecord::Base
     imprintable = Imprintable::find_by_admin_inventory_id(id)
     color = Color::find_by(name: inventory.color.color) unless inventory.nil?
     size = Size::find_by(display_value: inventory.size.size) unless inventory.nil?
-    
+
     if size && imprintable && color
       variant = self.find_or_initialize_by(
         imprintable_id: imprintable.id,

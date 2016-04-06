@@ -18,6 +18,24 @@ class Imprintable < ActiveRecord::Base
     "#{brand.name}"
   end
 
+  def self.find_or_create_by_admin_inventory(admin_inventory)
+    brand = Brand.find_or_create_by(name: admin_inventory.brand.name)
+    return Imprintable.find_by(brand_id: brand.id, style_catalog_no: admin_inventory.catalog_number) if Imprintable.exists?(brand_id: brand.id, style_catalog_no: admin_inventory.catalog_number)
+    Imprintable.create(
+                  brand_id: brand.id,
+                  style_name: admin_inventory.name,
+                  style_catalog_no: admin_inventory.catalog_number,
+                  style_description: admin_inventory.description,
+                  base_price:  0.00,
+                  xxl_upcharge:  0.00,
+                  xxxl_upcharge:  0.00,
+                  xxxxl_upcharge:  0.00,
+                  xxxxxl_upcharge:  0.00,
+                  xxxxxxl_upcharge:  0.00,
+                  retail:  false
+    )
+  end
+
   def self.find_by_admin_inventory_id(id)
     inventory = Admin::Inventory.find_by(id: id)
     return self.find_by_admin_inventory(inventory) unless inventory.nil?

@@ -7,12 +7,12 @@ class Color < ActiveRecord::Base
     if ac_name.include? "CrÃ¨me"
       ac_name = "Creme"
     end
-    
+
     color = Color::find_or_create_by(name: ac_name)
-   
+
     if color.new_record?
       color.save
-    end 
+    end
     return color
   end
 end
