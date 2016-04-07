@@ -21,7 +21,7 @@ class Imprintable < ActiveRecord::Base
   def self.find_or_create_by_admin_inventory(admin_inventory)
     brand = Brand.find_or_create_by(name: admin_inventory.brand.name)
     return Imprintable.find_by(brand_id: brand.id, style_catalog_no: admin_inventory.catalog_number) if Imprintable.exists?(brand_id: brand.id, style_catalog_no: admin_inventory.catalog_number)
-    Imprintable.create(
+    Imprintable.create!(
                   brand_id: brand.id,
                   style_name: admin_inventory.name,
                   style_catalog_no: admin_inventory.catalog_number,

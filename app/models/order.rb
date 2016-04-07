@@ -17,6 +17,14 @@ class Order < ActiveRecord::Base
   validates :salesperson, presence: true
   validates :name, presence: true
 
+  after_initialize do
+    next unless respond_to?(:customer_key)
+    while customer_key.blank? ||
+      Order.where(customer_key: customer_key).where.not(id: id).exists?
+      self.customer_key = rand(36**6).to_s(36).upcase
+    end
+  end
+
   # def self.create_from_admin_order_alternative(admin_order)
   #   order = Order.find_by(id: crm_order_id_from_admin_order(admin_order))
   #
@@ -29,12 +37,11 @@ class Order < ActiveRecord::Base
 
   def self.create_from_admin_order(admin_order)
     order = self.find_or_initialize_by(id: admin_order.crm_order_id)
-    order.valid? ? order.imported_from_admin = false : order.imported_from_admin = true
     order.name = admin_order.title
     order.firstname = admin_order.customer.first_name
-    order.lastname = admin_order.customer.last_name
+    order.lastname = (admin_order.customer.last_name.blank? ? '(Not Provided' : admin_order.customer.last_name)
     order.email = admin_order.customer.email
-    order.in_hand_by = admin_order.delivery_deadline
+    order.in_hand_by = (admin_order.delivery_deadline.blank? ? admin_order.created_at : admin_order.delivery_deadline)
     order.terms = self.get_terms_from_admin_order(admin_order)
     order.delivery_method = self.get_ship_method_from_admin_order(admin_order)
     order.store_id = Store.find_or_create_from_admin_order(admin_order).id
@@ -45,7 +52,8 @@ class Order < ActiveRecord::Base
     order.production_state = :complete
     order.notification_state = :picked_up
     order.phone_number = admin_order.crm_phone_number
-    order.save
+    order.shipping_price = admin_order.shipping || 0.0
+    order.save!
     return order
   end
   #
@@ -109,6 +117,85 @@ class Order < ActiveRecord::Base
     line_item = LineItem::create_from_admin_line_and_job(admin_line, job)
     line_items << line_item unless line_item.nil?
     return line_item
+  end
+
+  def recalculate_totals!
+    recalculate_totals
+    self.save!
+  end
+
+  def recalculate_totals
+    recalculate_subtotal
+    recalculate_taxable_total
+    recalculate_payment_total
+    self.discount_total = 0.0
+  end
+
+  def recalculate_subtotal
+    self.subtotal = line_items.reload.map { |li| li.total_price.to_f }.reduce(0, :+)
+  end
+
+  def recalculate_payment_total
+    self.payment_total = payments.reload.map { |p| p.amount.to_f }.reduce(0, :+)
+  end
+
+  def recalculate_taxable_total
+    (self.taxable_total = 0) if tax_exempt?
+    self.taxable_total = line_items.reload.taxable.map { |li| li.total_price.to_f }.reduce(0, :+)
+  end
+
+  def create_payment!(admin_order)
+    if admin_order.payments.empty?
+      Payment.create!(
+        order_id: self.id,
+        salesperson_id: self.salesperson_id,
+        store_id: self.store_id,
+        amount: self.balance,
+        payment_method: 1
+      )
+    else
+      Payment.create!(
+        order_id: self.id,
+        salesperson_id: self.salesperson_id,
+        store_id: self.store_id,
+        amount: self.balance,
+        payment_method: Payment::determine_payment_method(admin_order.payments.first)
+      )
+    end
+    recalculate_totals!
+  end
+
+  def balance
+    self.subtotal + self.tax + self.shipping_price
+  end
+
+  def tax
+    taxable_total * 0.06
+  end
+
+  def create_shipment!(admin_order)
+    return nil if admin_order.ship_method.downcase.include? "pick up"
+
+    Shipment.create(
+      name: "#{admin_order.customer.first_name} #{admin_order.customer.last_name}",
+      address_1: admin_order.delivery_address_1,
+      address_2: admin_order.delivery_address_2,
+      address_3: admin_order.delivery_address_3,
+      company: admin_order.delivery_company,
+      city: admin_order.delivery_city,
+      state: admin_order.delivery_state,
+      zipcode: admin_order.delivery_zipcode,
+      shippable_id: self.id,
+      shippable_type: "Order",
+      shipping_method_id: ShippingMethod::find_from_admin_order(admin_order)
+    )
+  end
+
+  def update_all_timestamps(admin_order)
+    update_columns(created_at: admin_order.created_at, updated_at: admin_order.created_at)
+    payments.update_all(created_at: admin_order.created_at, updated_at: admin_order.created_at)
+    shipments.update_all(created_at: admin_order.created_at, updated_at: admin_order.created_at)
+    line_items.update_all(created_at: admin_order.created_at, updated_at: admin_order.created_at)
   end
 
 end

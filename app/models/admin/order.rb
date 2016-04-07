@@ -10,6 +10,7 @@ class Admin::Order < ActiveRecord::Base
   has_many :payments, class_name: "Admin::Payment", foreign_key: :order_id
   has_many :jobs, class_name: "Admin::Job", foreign_key: :custom_order_id
   has_many :line_items, class_name: "Admin::LineItem", through: :jobs, foreign_key: :order_id
+  has_many :order_line_items, -> { where(job_id: 0)},  class_name: "Admin::LineItem", foreign_key: :order_id
 
   validates :customer_id, presence: true
   validates :administrator_id, presence: true

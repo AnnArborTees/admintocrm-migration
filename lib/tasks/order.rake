@@ -13,12 +13,16 @@ namespace :order do
     end
 
     Admin::Order.where("created_at like '#{args.year}%'").each do |ao|
-
       next if ao.title.include? "FBA"
       next if ao.status.downcase.include? "cancelled"
       next if Order.exists?(id: ao.crm_order_id, imported_from_admin: false)
 
       order = Order::create_from_admin_order(ao)
+      LineItem.where(id: order.line_items.map(&:id)).destroy_all
+      order.jobs.destroy_all
+      order.payments.destroy_all
+      order.shipments.destroy_all
+      order.reload
 
       ao.jobs.each do |aj|
         job = Job::find_or_create_from_admin_job(order, aj)
@@ -33,30 +37,32 @@ namespace :order do
         end
 
         aj.line_items.each do |li|
-          LineItem.where(id: order.line_items.map(&:id)).destroy_all
-          LineItem::create_from_admin_line_and_job(li, job)
+          LineItem::create_from_admin_line_item_and_job(li, job)
         end
       end
 
-      if ao.line_items.where(job_id: nil).count > 0
-        job = Job::find_or_create_by(
+      if ao.order_line_items.count > 0
+        job = Job::create!(
           jobbable_id: order.id,
           jobbable_type: "Order",
-          name: "No Job Provided",
+          name: "No Job Was Selected",
           description: "This Line Item has no Job in old Software"
         )
 
-        ao.line_items.where(job_id: nil).each do |li|
-          LineItem::create_from_admin_line_and_job(li, job)
+        ao.order_line_items.each do |li|
+          LineItem::create_from_admin_line_item_and_job(li, job)
         end
       end
 
-      Payment::find_by_admin_order(ao)
-      Shipment::new_shipment_from_admin_order(ao)
-      order.update_attribute(:artwork_state, :in_production)
-      order.update_attribute(:notification_state, :picked_up)
-      order.update_attribute(:invoice_state, :approved)
-      order.update_attribute(:production_state, :complete)
+      order.recalculate_totals!
+      order.create_payment!(ao)
+      order.create_shipment!(ao)
+      order.update_all_timestamps(ao)
+
+      order.update_column(:artwork_state, :in_production)
+      order.update_column(:notification_state, :picked_up)
+      order.update_column(:invoice_state, :approved)
+      order.update_column(:production_state, :complete)
 
       puts "#{order.id}"
     end

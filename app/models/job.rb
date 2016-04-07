@@ -1,6 +1,6 @@
 class Job < ActiveRecord::Base
   belongs_to :order, foreign_key: :jobbable_id
-  has_many :line_items, as: :line_itemable, foreign_key: :line_itemable_id
+  has_many :line_items
   has_many :imprints, foreign_key: :job_id
 
   validates :order, presence: true
@@ -25,23 +25,13 @@ class Job < ActiveRecord::Base
   end
 
   def self.find_or_create_from_admin_job(order, aj)
-    if aj.nil? || aj.title.blank?
-      return nil
-    end
-
-    if aj.description.nil? || aj.description.blank?
-      aj.description = "No description from Admin Job"
-    end
-
-    job = self.find_or_create_by(
-      name: aj.title,
-      description: aj.description
+    self.find_or_create_by(
+      name: (aj.title.blank? ? 'Not Provided' : aj.title),
+      description: (aj.description.blank? ? 'Not Provided' : aj.description),
+      jobbable_id: order.id,
+      jobbable_type: 'Order',
+      collapsed: true
     )
-    job.jobbable_id = order.id
-    job.jobbable_type = "Order"
-    job.collapsed = false
-    job.save
-    return job
   end
 
   def determine_imprint_methods(admin_job, unmappable)

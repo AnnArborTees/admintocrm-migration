@@ -6,7 +6,8 @@ class AdminProof < ActiveRecord::Base
   def self.create_from_order_id_and_proof(order_id, proof)
     admin_proof = self.find_or_initialize_by(
       order_id: order_id,
-      file_url: proof.file_path
+      file_url: proof.file_path,
+      description: proof.description
     )
     admin_proof.thumbnail_url = proof.file_path
 

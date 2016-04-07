@@ -2,7 +2,7 @@ class Shipment < ActiveRecord::Base
   belongs_to :shipping_method, foreign_key: :shipping_method_id
   belongs_to :shippable, polymorphic: true
 
-  validates :shippable, :shipping_method, 
+  validates :shippable, :shipping_method,
             :name, :address_1, :city, :state, :zipcode, presence: true
 
   def self.new_shipment_from_admin_order(admin_order)
@@ -10,7 +10,7 @@ class Shipment < ActiveRecord::Base
       return nil
     end
 
-    shipment = self.find_or_initialize_by( 
+    shipment = self.find_or_initialize_by(
       name: "#{admin_order.customer.first_name} #{admin_order.customer.last_name}",
       address_1: admin_order.delivery_address_1,
       address_2: admin_order.delivery_address_2,
@@ -23,11 +23,11 @@ class Shipment < ActiveRecord::Base
       shippable_type: "Order",
       shipping_method_id: ShippingMethod::find_or_create_from_admin_order(admin_order).id
      )
-    
+
     if shipment.new_record?
      shipment.save
     end
-    
-    return shipment 
+
+    return shipment
   end
 end

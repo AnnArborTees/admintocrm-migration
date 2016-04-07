@@ -11,9 +11,9 @@ class ImprintableVariant < ActiveRecord::Base
 
   def self.find_or_create_by_admin_inventory(admin_inventory)
     imprintable =  Imprintable.find_or_create_by_admin_inventory(admin_inventory)
-    color = Color.find_or_create_by_name(admin_inventory.color.color)
+    color = Color.find_or_create_by!(name: admin_inventory.color.color)
     size = Size.find_or_create_by_admin_size(admin_inventory.size)
-    ImprintableVariant.find_or_create_by(
+    ImprintableVariant.find_or_create_by!(
                         imprintable_id: imprintable.id,
                         color_id: color.id,
                         size_id: size.id,

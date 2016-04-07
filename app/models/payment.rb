@@ -4,7 +4,6 @@ class Payment < ActiveRecord::Base
   belongs_to :salesperson, class_name: "User", foreign_key: :salesperson_id
 
   validates :payment_method, presence: true
-  validates :t_description, presence: true
   validates :amount, presence: true
   validates :store, presence: true
   validates :order, presence: true
@@ -13,7 +12,7 @@ class Payment < ActiveRecord::Base
   def self.determine_payment_method(admin_payment)
     case admin_payment.payment_method.downcase
     when "cash"
-      return 1 
+      return 1
     when "check"
       return 3
     when "credit card", "swiped credit card"
@@ -22,7 +21,7 @@ class Payment < ActiveRecord::Base
       return 4
     when "wire transfer"
       return 7
-    end 
+    end
   end
 
   def self.get_description(admin_order)
@@ -37,7 +36,7 @@ class Payment < ActiveRecord::Base
     payment.amount = admin_order.total
     payment.t_description = self.get_description(admin_order)
     payment.payment_method = admin_payment.nil? ? nil : self.determine_payment_method(admin_payment)
-    payment.save
+    payment.save!
     return payment
   end
 
@@ -47,7 +46,7 @@ class Payment < ActiveRecord::Base
 #   payment.store_id = Store::find_or_create_from_admin_order(admin_payment.order).id
 #   payment.payment_method = self.determine_payment_method(admin_payment)
 #   payment.amount = admin_payment.amount
-#   payment.t_description = self.get_description(admin_payment) 
+#   payment.t_description = self.get_description(admin_payment)
 #   return payment
-# end 
+# end
 end
